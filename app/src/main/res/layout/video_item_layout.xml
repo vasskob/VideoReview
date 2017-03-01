@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.makeramen.roundedimageview.RoundedImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/video_thumbnail"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    app:riv_border_color="@drawable/border_color_selector"
+    app:riv_border_width="3dp"
+    app:riv_corner_radius="10dp"
+    app:riv_tile_mode="repeat"
+    android:src="@drawable/video_pic"/>
+
