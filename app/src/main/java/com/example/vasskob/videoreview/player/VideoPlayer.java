@@ -1,8 +1,6 @@
 package com.example.vasskob.videoreview.player;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.view.View;
 import android.widget.MediaController;
@@ -26,6 +24,8 @@ public class VideoPlayer implements MediaPlayer {
     public VideoPlayer(View anchorView) {
         mAnchorView = anchorView;
     }
+
+
 
     @Override
     public void playMedia(Context context, final List<Media> mediaList) {
@@ -91,16 +91,16 @@ public class VideoPlayer implements MediaPlayer {
         mMediaPlayer.reset();
 
 
-        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+//        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+//        audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
 
         try {
             mMediaPlayer.setDataSource(mContext, getUriFromIndex(mIndexToBePlayed));
-            SharedPreferences preferences = mContext.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("path", getUriFromIndex(mIndexToBePlayed).toString());
-            editor.apply();
+//            SharedPreferences preferences = mContext.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+//            SharedPreferences.Editor editor = preferences.edit();
+//            editor.putString("path", getUriFromIndex(mIndexToBePlayed).toString());
+//            editor.apply();
         } catch (IOException e) {
             e.printStackTrace();
         }

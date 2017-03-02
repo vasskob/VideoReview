@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,9 +24,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     private LayoutInflater mLayoutInflater = null;
     private Context context;
 
-    public VideoListAdapter(FragmentActivity context) {
+    public VideoListAdapter(FragmentActivity context, TextureView view) {
         mLayoutInflater = LayoutInflater.from(context);
-        mMediaPresenter = MediaPresenterFactory.getMediaPresenter(context, Constants.MEDIA_TYPE_VIDEO);
+        mMediaPresenter = MediaPresenterFactory.getMediaPresenter(context, Constants.MEDIA_TYPE_VIDEO, view);
         mMediaPresenter.getMediaItems(new MediaPresenter.Callback() {
             @Override
             public void onItemsAvailable(List<Media> items) {

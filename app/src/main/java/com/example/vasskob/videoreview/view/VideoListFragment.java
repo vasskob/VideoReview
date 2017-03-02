@@ -41,15 +41,15 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_video_list);
-        VideoListAdapter mAdapter = new VideoListAdapter(getActivity());
         mRecyclerView.addItemDecoration(new MarginDecoration(getContext()));
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
 
         TextureView mVideoView = (TextureView) rootView.findViewById(R.id.video_view);
         mVideoView.setOpaque(false);
         mVideoView.setSurfaceTextureListener(this);
+        VideoListAdapter mAdapter = new VideoListAdapter(getActivity(), mVideoView );
+        mRecyclerView.setAdapter(mAdapter);
 
     }
 

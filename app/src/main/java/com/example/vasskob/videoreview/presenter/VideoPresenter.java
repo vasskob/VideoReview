@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.View;
+import android.view.TextureView;
 
 import com.example.vasskob.videoreview.Constants;
 import com.example.vasskob.videoreview.factories.MediaPlayerFactory;
@@ -21,14 +21,16 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
 
     private FragmentActivity mActivity = null;
     private Callback mCallback = null;
+    private TextureView mTextureView=null;
     private com.example.vasskob.videoreview.player.MediaPlayer mVideoPlayer = null;
 
     private static final int VIDEO_LOADER_ID = 10;
 
-    public VideoPresenter(FragmentActivity activity) {
+    public VideoPresenter(FragmentActivity activity, TextureView view) {
         mActivity = activity;
-        View decorView = mActivity.getWindow().getDecorView();
-        mVideoPlayer = MediaPlayerFactory.getMediaPlayer(Constants.MEDIA_TYPE_VIDEO, decorView);
+        mTextureView=view;
+       // View decorView = mActivity.getWindow().getDecorView();
+        mVideoPlayer = MediaPlayerFactory.getMediaPlayer(Constants.MEDIA_TYPE_VIDEO, mTextureView);
 
     }
 
