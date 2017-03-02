@@ -1,42 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextureView
         android:id="@+id/video_view"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_margin="20dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/video_seek_bar"
+        />
 
-    <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
-        android:id="@+id/range_seek_bar"
+    <org.florescu.android.rangeseekbar.RangeSeekBar
+        android:id="@+id/video_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/video_view"
-        android:layout_margin="10dp"
-        app:corner_radius="10"
-        app:min_value="0"
-        app:max_value="100"
-        app:gap="20"
-        app:bar_color="#8990C4"
-        app:bar_highlight_color="#D810EA"
-        app:left_thumb_color="#8D0D99"
-        app:right_thumb_color="#8D0D99"
-        app:left_thumb_color_pressed="#56005E"
-        app:right_thumb_color_pressed="#56005E"
-        app:data_type="_integer"/>
+        android:layout_above="@+id/video_duration_select"
+        android:background="@color/colorPrimaryDark" />
+
+    <Spinner
+        android:id="@+id/video_duration_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rv_video_list"
+        android:entries="@array/video_duration" />
+
 
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/my_recycler_view"
+        android:id="@+id/rv_video_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/range_seek_bar"
-        android:scrollbars="vertical"/>
+        android:layout_height="220dp"
+        android:layout_alignParentBottom="true"
+        android:scrollbars="vertical" />
 </RelativeLayout>

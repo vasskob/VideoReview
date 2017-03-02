@@ -40,22 +40,23 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+        RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_video_list);
         VideoListAdapter mAdapter = new VideoListAdapter(getActivity());
-        recyclerView.addItemDecoration(new MarginDecoration(getContext()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
+        mRecyclerView.addItemDecoration(new MarginDecoration(getContext()));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
 
-        TextureView mVideoPreview = (TextureView) rootView.findViewById(R.id.video_view);
-        mVideoPreview.setSurfaceTextureListener(this);
-        mVideoPreview.setOpaque(false);
+        TextureView mVideoView = (TextureView) rootView.findViewById(R.id.video_view);
+        mVideoView.setOpaque(false);
+        mVideoView.setSurfaceTextureListener(this);
 
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
         try {
+// TODO: 03.03.17  VideoPlayer method to init mediaPlayer & setDataSource to it
 
             SharedPreferences preferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
             Surface mSurface = new Surface(surfaceTexture);
@@ -105,6 +106,7 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
+        // TODO: 03.03.17  presenter onDestroy mediaPlayer .release(); mediaPlayer=null;
     }
 
 }

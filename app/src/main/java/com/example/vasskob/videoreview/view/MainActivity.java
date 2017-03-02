@@ -1,14 +1,15 @@
 package com.example.vasskob.videoreview.view;
 
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.example.vasskob.videoreview.R;
@@ -25,26 +26,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         linearLayout = (LinearLayout) findViewById(R.id.linear_layout);
+        linearLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        );
         if (!checkPermission()) {
             requestPermission();
-        }
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (checkPermission()) {
-            Fragment fragment = new VideoListFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(android.R.id.content, fragment);
-            fragmentTransaction.commit();
         } else {
-            requestPermission();
+            initFragment();
         }
 
     }
 
+    protected void initFragment() {
+        Fragment fragment = new VideoListFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(android.R.id.content, fragment);
+        fragmentTransaction.commit();
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
@@ -54,9 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
                     boolean dataReadAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
-                    if (dataReadAccepted)
+                    if (dataReadAccepted) {
                         Snackbar.make(linearLayout, R.string.permission_granted, Snackbar.LENGTH_LONG).show();
-                    else {
+                        initFragment();
+                    } else {
                         Snackbar.make(linearLayout, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                         if (!checkPermission()) {
                             requestPermission();
