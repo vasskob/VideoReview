@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Video Review</string>
     <string name="artist">sri</string>
+    <string name="permission_granted">Permission Granted, Now you can access VideoReview</string>
+    <string name="permission_denied">You cannot access VideoReview without allowing internal storage read permission</string>
 </resources>

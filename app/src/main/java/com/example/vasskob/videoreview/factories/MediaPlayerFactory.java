@@ -12,7 +12,7 @@ public class MediaPlayerFactory {
     public static MediaPlayer getMediaPlayer(int type, View view) {
         switch (type) {
             case Constants.MEDIA_TYPE_VIDEO:
-                return new VideoPlayer();
+                return new VideoPlayer(view);
 
             default:
                 return null;

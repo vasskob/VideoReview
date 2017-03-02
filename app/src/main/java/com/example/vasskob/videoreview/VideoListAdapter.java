@@ -9,11 +9,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.vasskob.videoreview.factories.MediaPresenterFactory;
 import com.example.vasskob.videoreview.model.Media;
-import com.example.vasskob.videoreview.model.Video;
 import com.example.vasskob.videoreview.presenter.MediaPresenter;
 import com.example.vasskob.videoreview.utils.VideoThumbnailUtil;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -61,7 +59,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 //                .placeholder(R.drawable.video_pic)
 //                .into(holder.mThumbnail);
 
-     //   System.out.println(" onBindVieHolder path = " + mMediaItems.get(position).getPath());
+        //   System.out.println(" onBindVieHolder path = " + mMediaItems.get(position).getPath());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,17 +79,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     static class VideoListViewHolder extends RecyclerView.ViewHolder {
 
-//        private TextView mTitleView = null;
-//        private TextView mArtist = null;
+//      private TextView mTitleView = null;
 
         private RoundedImageView mThumbnail = null;
 
         VideoListViewHolder(View view) {
             super(view);
             mThumbnail = (RoundedImageView) view.findViewById(R.id.video_thumbnail);
+//          mTitleView = (TextView)view.findViewById(R.id.title);
 
-//            mTitleView = (TextView)view.findViewById(R.id.title);
-//            mArtist = (TextView)view.findViewById(R.id.artist);
         }
     }
 

@@ -2,13 +2,18 @@ package com.example.vasskob.videoreview.presenter;
 
 
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.TextureView;
+import android.view.View;
 
+import com.example.vasskob.videoreview.Constants;
+import com.example.vasskob.videoreview.factories.MediaPlayerFactory;
 import com.example.vasskob.videoreview.model.Media;
 import com.example.vasskob.videoreview.model.Video;
 
@@ -18,11 +23,15 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
 
     private FragmentActivity mActivity = null;
     private Callback mCallback = null;
+    private com.example.vasskob.videoreview.player.MediaPlayer mVideoPlayer = null;
 
     private static final int VIDEO_LOADER_ID = 10;
 
     public VideoPresenter(FragmentActivity activity) {
         mActivity = activity;
+        View decorView = mActivity.getWindow().getDecorView();
+        mVideoPlayer = MediaPlayerFactory.getMediaPlayer(Constants.MEDIA_TYPE_VIDEO, decorView);
+
     }
 
 
@@ -30,10 +39,15 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
     public void getMediaItems(Callback callback) {
         mCallback = callback;
         mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
+
     }
 
     @Override
     public void onMediaItemClicked(Media media) {
+
+        LinkedList<Media> video = new LinkedList<>();
+        video.add(media);
+        mVideoPlayer.playMedia(mActivity, video);
 
     }
 

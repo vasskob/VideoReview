@@ -1,14 +1,16 @@
 package com.example.vasskob.videoreview.view.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.SurfaceTexture;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
@@ -25,17 +27,17 @@ import java.io.IOException;
 public class VideoListFragment extends Fragment implements TextureView.SurfaceTextureListener {
 
 
+    private static final String TAG = "TAG";
     private TextureView mVideoPreview;
     private MediaPlayer mMediaPlayer;
-
+    private String mVideoFilePath;
     private RecyclerView recyclerView;
     private View rootView;
+    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.video_fragment_layout, parent, false);
-//        RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.rv_layout, parent, false);
-
         return rootView;
     }
 
@@ -48,51 +50,65 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
+
         mVideoPreview = (TextureView) rootView.findViewById(R.id.video_view);
         mVideoPreview.setSurfaceTextureListener(this);
+        mVideoPreview.setOpaque(false);
+
     }
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        Surface s = new Surface(surface);
+    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
         try {
+
+            preferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            Surface mSurface = new Surface(surfaceTexture);
+            AssetFileDescriptor afd = getContext().getAssets().openFd("welcome.mp4");
             mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setDataSource("http://daily3gp.com/vids/747.3gp");
-            mMediaPlayer.setSurface(s);
-            mMediaPlayer.prepare();
-//            mMediaPlayer.setOnBufferingUpdateListener(getActivity());
-//            mMediaPlayer.setOnCompletionListener(getContext());
-//            mMediaPlayer.setOnPreparedListener(this);
-//            mMediaPlayer.setOnVideoSizeChangedListener(this);
-//            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//            mMediaPlayer.start();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            if (preferences.getString("path", null) != null) {
+                mMediaPlayer.setDataSource(preferences.getString("path", null));
+            } else {
+                mMediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            }
+            System.out.println("path !!!!=" + preferences.getString("path",null));
+            mMediaPlayer.setSurface(mSurface);
+            mMediaPlayer.prepareAsync();
+
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.setLooping(true);
+                    mediaPlayer.seekTo(0);
+                    mediaPlayer.start();
+                }
+            });
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.d(TAG, "IOException there is no file to play");
         }
     }
 
     @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
     }
 
     @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
         return false;
     }
 
     @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+    public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
 
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+    }
+
 }
