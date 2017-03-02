@@ -1,23 +1,18 @@
 package com.example.vasskob.videoreview;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.example.vasskob.videoreview.factories.MediaPresenterFactory;
 import com.example.vasskob.videoreview.model.Media;
 import com.example.vasskob.videoreview.presenter.MediaPresenter;
-import com.example.vasskob.videoreview.utils.VideoThumbnailUtil;
 import com.makeramen.roundedimageview.RoundedImageView;
-import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 
@@ -50,16 +45,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     @Override
     public void onBindViewHolder(final VideoListViewHolder holder, final int position) {
-        holder.mThumbnail.setImageBitmap(VideoThumbnailUtil.getVideoThumbnail(mMediaItems.get(position).getPath(), 200, 200));
 
-//        Picasso.with(context)
-//                .load(getImageUri(context, VideoThumbnailUtil.getVideoThumbnail(mMediaItems.get(position).getPath(), 200, 200)))
-//                .centerCrop()
-//                .fit()
-//                .placeholder(R.drawable.video_pic)
-//                .into(holder.mThumbnail);
+        Glide.with(context)
+                .load(mMediaItems.get(position).getPath())
+                .asBitmap()
+                .placeholder(R.drawable.video_pic_small)
+                .centerCrop()
+                .override(200, 200)
+                .into(holder.mThumbnail);
 
-        //   System.out.println(" onBindVieHolder path = " + mMediaItems.get(position).getPath());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,10 +85,5 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         }
     }
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
+
 }

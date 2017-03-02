@@ -2,14 +2,12 @@ package com.example.vasskob.videoreview.presenter;
 
 
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.TextureView;
 import android.view.View;
 
 import com.example.vasskob.videoreview.Constants;

@@ -1,4 +1,4 @@
-package com.example.vasskob.videoreview.view.fragments;
+package com.example.vasskob.videoreview.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -28,12 +28,8 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
 
 
     private static final String TAG = "TAG";
-    private TextureView mVideoPreview;
     private MediaPlayer mMediaPlayer;
-    private String mVideoFilePath;
-    private RecyclerView recyclerView;
     private View rootView;
-    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -44,14 +40,14 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
         VideoListAdapter mAdapter = new VideoListAdapter(getActivity());
         recyclerView.addItemDecoration(new MarginDecoration(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
 
-        mVideoPreview = (TextureView) rootView.findViewById(R.id.video_view);
+        TextureView mVideoPreview = (TextureView) rootView.findViewById(R.id.video_view);
         mVideoPreview.setSurfaceTextureListener(this);
         mVideoPreview.setOpaque(false);
 
@@ -61,7 +57,7 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
         try {
 
-            preferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            SharedPreferences preferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
             Surface mSurface = new Surface(surfaceTexture);
             AssetFileDescriptor afd = getContext().getAssets().openFd("welcome.mp4");
             mMediaPlayer = new MediaPlayer();
@@ -71,7 +67,7 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
             } else {
                 mMediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             }
-            System.out.println("path !!!!=" + preferences.getString("path",null));
+            System.out.println("path !!!!=" + preferences.getString("path", null));
             mMediaPlayer.setSurface(mSurface);
             mMediaPlayer.prepareAsync();
 

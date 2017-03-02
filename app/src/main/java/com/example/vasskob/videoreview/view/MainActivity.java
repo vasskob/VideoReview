@@ -1,4 +1,4 @@
-package com.example.vasskob.videoreview.view.main;
+package com.example.vasskob.videoreview.view;
 
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -8,12 +8,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.support.design.widget.Snackbar;
 import android.widget.LinearLayout;
 
 import com.example.vasskob.videoreview.R;
-import com.example.vasskob.videoreview.view.fragments.VideoListFragment;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
