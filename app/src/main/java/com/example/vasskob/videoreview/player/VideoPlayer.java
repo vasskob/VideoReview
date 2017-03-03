@@ -1,30 +1,32 @@
 package com.example.vasskob.videoreview.player;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
+import android.util.Log;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.MediaController;
 
 import com.example.vasskob.videoreview.model.Media;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class VideoPlayer implements MediaPlayer {
+public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListener {
 
+    private static final String TAG = "TAG";
     private Context mContext = null;
-    private View mAnchorView = null;
+    private TextureView mTextureView = null;
     private List<Media> mMediaList = null;
-    private MediaController mMediaController = null;
+    private MediaController mVideoController = null;
     private android.media.MediaPlayer mMediaPlayer = null;
     private boolean mIsPlaying = false;
-    private int mIndexToBePlayed = 0;
 
-    public VideoPlayer(View anchorView) {
-        mAnchorView = anchorView;
+    public VideoPlayer(TextureView textureView) {
+        mTextureView = textureView;
     }
-
 
 
     @Override
@@ -41,77 +43,82 @@ public class VideoPlayer implements MediaPlayer {
             mIsPlaying = true;
             mMediaPlayer = new android.media.MediaPlayer();
             MediaPlayerController mPlayerController = new MediaPlayerController(mMediaPlayer);
-            mMediaController = new MediaController(mContext) {
+            mVideoController = new MediaController(mContext) {
                 @Override
                 public void hide() {
-
+                    mVideoController.setVisibility(View.GONE);
                 }
             };
+            mTextureView.getLayoutParams().height = mTextureView.getWidth();
+            mTextureView.setOnClickListener(new View.OnClickListener() {
+                boolean click;
 
-            mMediaController.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                @Override
+                public void onClick(View v) {
+                    click = !click;
+                    if (click) {
+                        mVideoController.setVisibility(View.VISIBLE);
+                    } else {
+                        mVideoController.setVisibility(View.GONE);
+                    }
+                }
+            });
+
+            mTextureView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            );
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 
-            mMediaController.setAnchorView(mAnchorView);
-            mMediaController.setMediaPlayer(mPlayerController);
-
-            if (mediaList != null && mediaList.size() > 1) {
-                mMediaController.setPrevNextListeners(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mIndexToBePlayed = (mIndexToBePlayed + 1) % mMediaList.size();
-                                initializeMediaPlayer();
-                            }
-                        },
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mIndexToBePlayed = ((mIndexToBePlayed + 1) % mMediaList.size()) - 1;
-                                initializeMediaPlayer();
-                            }
-                        }
-                );
-            }
+            mVideoController.setAnchorView(mTextureView);
+            mVideoController.setMediaPlayer(mPlayerController);
 
         }
-        initializeMediaPlayer();
+        onSurfaceTextureAvailable(mTextureView.getSurfaceTexture(), mTextureView.getWidth(), mTextureView.getHeight());
     }
 
     private Uri getUriFromIndex(int index) {
-
-
-        //return Uri.parse(mMediaList.get(index).getPath());
-        return Uri.fromFile(new File(mMediaList.get(index).getPath()));
+        return Uri.parse(mMediaList.get(index).getPath());
     }
 
 
-    private void initializeMediaPlayer() {
-        mMediaPlayer.reset();
-
-
-//        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-//        audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-
-
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         try {
+            mMediaPlayer.reset();
+            Surface mSurface = new Surface(surface);
+            int mIndexToBePlayed = 0;
             mMediaPlayer.setDataSource(mContext, getUriFromIndex(mIndexToBePlayed));
-//            SharedPreferences preferences = mContext.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = preferences.edit();
-//            editor.putString("path", getUriFromIndex(mIndexToBePlayed).toString());
-//            editor.apply();
+            mMediaPlayer.setSurface(mSurface);
+            mMediaPlayer.prepareAsync();
+            mMediaPlayer.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(android.media.MediaPlayer mediaPlayer) {
+
+                    mediaPlayer.setLooping(true);
+                    mediaPlayer.seekTo(0);
+                    mediaPlayer.start();
+                    mVideoController.show();
+                }
+            });
+
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d(TAG, "IOException there is no file to play");
         }
-        mMediaPlayer.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(android.media.MediaPlayer mp) {
-                mp.start();
-                mMediaController.show();
-            }
-        });
-        mMediaPlayer.prepareAsync();
+
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 
     private class MediaPlayerController implements MediaController.MediaPlayerControl, android.media.MediaPlayer.OnBufferingUpdateListener {

@@ -1,4 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -6,30 +8,32 @@
     <TextureView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/video_seek_bar"
-        />
+        android:layout_height="1dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"/>
 
     <org.florescu.android.rangeseekbar.RangeSeekBar
         android:id="@+id/video_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/video_duration_select"
-        android:background="@color/colorPrimaryDark" />
-
-    <Spinner
-        android:id="@+id/video_duration_select"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_above="@+id/rv_video_list"
-        android:entries="@array/video_duration" />
+        app:textAboveThumbsColor="@color/black"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="8dp"/>
+
+    <!--<Spinner-->
+    <!--android:id="@+id/video_duration_select"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_above="@+id/rv_video_list"-->
+    <!--android:entries="@array/video_duration"/>-->
 
 
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/rv_video_list"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="250dp"
         android:layout_alignParentBottom="true"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"/>
 </RelativeLayout>

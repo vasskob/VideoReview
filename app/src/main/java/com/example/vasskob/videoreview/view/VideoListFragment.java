@@ -1,18 +1,12 @@
 package com.example.vasskob.videoreview.view;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
-import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +15,9 @@ import com.example.vasskob.videoreview.R;
 import com.example.vasskob.videoreview.VideoListAdapter;
 import com.example.vasskob.videoreview.utils.MarginDecoration;
 
-import java.io.IOException;
 
+public class VideoListFragment extends Fragment  {
 
-public class VideoListFragment extends Fragment implements TextureView.SurfaceTextureListener {
-
-
-    private static final String TAG = "TAG";
     private MediaPlayer mMediaPlayer;
     private View rootView;
 
@@ -47,57 +37,13 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
 
         TextureView mVideoView = (TextureView) rootView.findViewById(R.id.video_view);
         mVideoView.setOpaque(false);
-        mVideoView.setSurfaceTextureListener(this);
+
+       // mVideoView.setSurfaceTextureListener(this);
         VideoListAdapter mAdapter = new VideoListAdapter(getActivity(), mVideoView );
         mRecyclerView.setAdapter(mAdapter);
 
     }
 
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
-        try {
-// TODO: 03.03.17  VideoPlayer method to init mediaPlayer & setDataSource to it
-
-            SharedPreferences preferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-            Surface mSurface = new Surface(surfaceTexture);
-            AssetFileDescriptor afd = getContext().getAssets().openFd("welcome.mp4");
-            mMediaPlayer = new MediaPlayer();
-
-            if (preferences.getString("path", null) != null) {
-                mMediaPlayer.setDataSource(preferences.getString("path", null));
-            } else {
-                mMediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-            }
-            System.out.println("path !!!!=" + preferences.getString("path", null));
-            mMediaPlayer.setSurface(mSurface);
-            mMediaPlayer.prepareAsync();
-
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.setLooping(true);
-                    mediaPlayer.seekTo(0);
-                    mediaPlayer.start();
-                }
-            });
-        } catch (IOException e) {
-            Log.d(TAG, "IOException there is no file to play");
-        }
-    }
-
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
-        return false;
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-
-    }
 
     @Override
     public void onDestroy() {
@@ -106,6 +52,8 @@ public class VideoListFragment extends Fragment implements TextureView.SurfaceTe
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
+
+
         // TODO: 03.03.17  presenter onDestroy mediaPlayer .release(); mediaPlayer=null;
     }
 

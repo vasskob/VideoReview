@@ -29,7 +29,6 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
     public VideoPresenter(FragmentActivity activity, TextureView view) {
         mActivity = activity;
         mTextureView=view;
-       // View decorView = mActivity.getWindow().getDecorView();
         mVideoPlayer = MediaPlayerFactory.getMediaPlayer(Constants.MEDIA_TYPE_VIDEO, mTextureView);
 
     }

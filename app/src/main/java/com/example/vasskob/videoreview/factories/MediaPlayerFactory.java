@@ -9,10 +9,10 @@ import com.example.vasskob.videoreview.player.VideoPlayer;
 
 public class MediaPlayerFactory {
 
-    public static MediaPlayer getMediaPlayer(int type, TextureView view) {
+    public static MediaPlayer getMediaPlayer(int type, TextureView textureView) {
         switch (type) {
             case Constants.MEDIA_TYPE_VIDEO:
-                return new VideoPlayer(view);
+                return new VideoPlayer(textureView);
 
             default:
                 return null;
