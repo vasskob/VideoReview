@@ -16,7 +16,7 @@ import com.example.vasskob.videoreview.VideoListAdapter;
 import com.example.vasskob.videoreview.utils.MarginDecoration;
 
 
-public class VideoListFragment extends Fragment  {
+public class VideoListFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer;
     private View rootView;
@@ -37,12 +37,12 @@ public class VideoListFragment extends Fragment  {
 
         TextureView mVideoView = (TextureView) rootView.findViewById(R.id.video_view);
         mVideoView.setOpaque(false);
-
-       // mVideoView.setSurfaceTextureListener(this);
-        VideoListAdapter mAdapter = new VideoListAdapter(getActivity(), mVideoView );
+//       mVideoView.setSurfaceTextureListener(this);
+        VideoListAdapter mAdapter = new VideoListAdapter(getActivity(), mVideoView);
         mRecyclerView.setAdapter(mAdapter);
 
     }
+
 
 
     @Override

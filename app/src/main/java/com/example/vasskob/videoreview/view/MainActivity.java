@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -26,19 +27,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         linearLayout = (LinearLayout) findViewById(R.id.linear_layout);
-        linearLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+        linearLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         );
-        if (!checkPermission()) {
+        if (checkPermission()) {
             requestPermission();
         } else {
             initFragment();
         }
-
     }
 
-    protected void initFragment() {
+    private void initFragment() {
         Fragment fragment = new VideoListFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(android.R.id.content, fragment);
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                         initFragment();
                     } else {
                         Snackbar.make(linearLayout, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
-                        if (!checkPermission()) {
+                        if (checkPermission()) {
                             requestPermission();
                         }
                     }
@@ -69,13 +68,22 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
-
-        return result == PackageManager.PERMISSION_GRANTED;
+        return result != PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermission() {
-
         ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-
     }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+
 }

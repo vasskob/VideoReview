@@ -16,7 +16,7 @@ import java.util.List;
 
 public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListener {
 
-    private static final String TAG = "TAG";
+    private static final String TAG = VideoPlayer.class.getSimpleName();
     private Context mContext = null;
     private TextureView mTextureView = null;
     private List<Media> mMediaList = null;
@@ -28,9 +28,17 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
         mTextureView = textureView;
     }
 
+    @Override
+    public void stopMedia() {
+        if (mMediaPlayer!=null){
+            mMediaPlayer.stop();
+            mMediaPlayer=null;
+        }
+    }
 
     @Override
     public void playMedia(Context context, final List<Media> mediaList) {
+//        adjustAspectRatio(mediaList.get(,150);
         mContext = context;
         mMediaList = mediaList;
 
@@ -42,6 +50,7 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
         } else {
             mIsPlaying = true;
             mMediaPlayer = new android.media.MediaPlayer();
+
             MediaPlayerController mPlayerController = new MediaPlayerController(mMediaPlayer);
             mVideoController = new MediaController(mContext) {
                 @Override
@@ -55,6 +64,7 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
 
                 @Override
                 public void onClick(View v) {
+
                     click = !click;
                     if (click) {
                         mVideoController.setVisibility(View.VISIBLE);
@@ -63,10 +73,6 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
                     }
                 }
             });
-
-            mTextureView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 
             mVideoController.setAnchorView(mTextureView);
             mVideoController.setMediaPlayer(mPlayerController);
@@ -77,6 +83,7 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
 
     private Uri getUriFromIndex(int index) {
         return Uri.parse(mMediaList.get(index).getPath());
+
     }
 
 
@@ -84,10 +91,13 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         try {
             mMediaPlayer.reset();
+
             Surface mSurface = new Surface(surface);
+
             int mIndexToBePlayed = 0;
             mMediaPlayer.setDataSource(mContext, getUriFromIndex(mIndexToBePlayed));
             mMediaPlayer.setSurface(mSurface);
+            //mMediaPlayer.setOnVideoSizeChangedListener(this);
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
                 @Override
@@ -95,8 +105,10 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
 
                     mediaPlayer.setLooping(true);
                     mediaPlayer.seekTo(0);
+                    mediaPlayer.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
                     mediaPlayer.start();
                     mVideoController.show();
+
                 }
             });
 
@@ -120,6 +132,7 @@ public class VideoPlayer implements MediaPlayer, TextureView.SurfaceTextureListe
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
     }
+
 
     private class MediaPlayerController implements MediaController.MediaPlayerControl, android.media.MediaPlayer.OnBufferingUpdateListener {
 

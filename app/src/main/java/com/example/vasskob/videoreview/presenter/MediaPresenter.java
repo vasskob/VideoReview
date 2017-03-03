@@ -10,7 +10,7 @@ public interface MediaPresenter {
     void getMediaItems(Callback callback);
     void onMediaItemClicked(Media media);
 
-    public interface Callback{
+    interface Callback{
         void onItemsAvailable(List<Media> items);
     }
 }

@@ -9,5 +9,6 @@ import java.util.List;
 
 public interface MediaPlayer {
     void playMedia(Context context, List<Media>media);
+    void stopMedia();
 
 }

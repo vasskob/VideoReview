@@ -22,7 +22,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     private MediaPresenter mMediaPresenter = null;
     private List<Media> mMediaItems = null;
     private LayoutInflater mLayoutInflater = null;
-    private Context context;
+    private final Context context;
+    private int mCurrentPosition=100;
+
+
 
     public VideoListAdapter(FragmentActivity context, TextureView view) {
         mLayoutInflater = LayoutInflater.from(context);
@@ -55,12 +58,16 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 .override(200, 200)
                 .into(holder.mThumbnail);
 
+        holder.mThumbnail.setSelected(position == mCurrentPosition);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMediaPresenter.onMediaItemClicked(mMediaItems.get(holder.getAdapterPosition()));
+                mCurrentPosition = holder.getAdapterPosition();
+                VideoListAdapter.this.notifyDataSetChanged();
             }
         });
+
     }
 
     @Override
@@ -72,6 +79,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         return mMediaItems.size();
     }
 
+
     static class VideoListViewHolder extends RecyclerView.ViewHolder {
 
 //      private TextView mTitleView = null;
@@ -82,6 +90,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             super(view);
             mThumbnail = (RoundedImageView) view.findViewById(R.id.video_thumbnail);
 //          mTitleView = (TextView)view.findViewById(R.id.title);
+
 
         }
     }

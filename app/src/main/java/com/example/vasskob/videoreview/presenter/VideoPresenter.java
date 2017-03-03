@@ -1,6 +1,5 @@
 package com.example.vasskob.videoreview.presenter;
 
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -9,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.TextureView;
+import android.view.View;
 
 import com.example.vasskob.videoreview.Constants;
 import com.example.vasskob.videoreview.factories.MediaPlayerFactory;
@@ -21,25 +21,23 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
 
     private FragmentActivity mActivity = null;
     private Callback mCallback = null;
-    private TextureView mTextureView=null;
-    private com.example.vasskob.videoreview.player.MediaPlayer mVideoPlayer = null;
+    private static com.example.vasskob.videoreview.player.MediaPlayer mVideoPlayer = null;
+    private final TextureView textureView;
 
     private static final int VIDEO_LOADER_ID = 10;
 
     public VideoPresenter(FragmentActivity activity, TextureView view) {
         mActivity = activity;
-        mTextureView=view;
-        mVideoPlayer = MediaPlayerFactory.getMediaPlayer(Constants.MEDIA_TYPE_VIDEO, mTextureView);
-
+        mVideoPlayer = MediaPlayerFactory.getMediaPlayer(Constants.MEDIA_TYPE_VIDEO, view);
+        textureView = view;
     }
-
 
     @Override
     public void getMediaItems(Callback callback) {
         mCallback = callback;
         mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
-
     }
+
 
     @Override
     public void onMediaItemClicked(Media media) {
@@ -47,7 +45,12 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
         LinkedList<Media> video = new LinkedList<>();
         video.add(media);
         mVideoPlayer.playMedia(mActivity, video);
+        textureView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+    }
 
+    public static void onBackPressed() {
+        mVideoPlayer.stopMedia();
     }
 
     @Override
@@ -58,7 +61,7 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
             loader.setProjection(null);
             loader.setSelection(null);
             loader.setSelectionArgs(null);
-            loader.setSortOrder(null);
+            loader.setSortOrder(MediaStore.Video.Media.DATE_ADDED + " DESC");
             return loader;
         }
 
@@ -88,7 +91,6 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
             if (mCallback != null) {
                 mCallback.onItemsAvailable(mediaList);
             }
-
         }
     }
 
@@ -99,7 +101,6 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
                 mCallback.onItemsAvailable(new LinkedList<Media>());
             }
         }
-
     }
 }
 
