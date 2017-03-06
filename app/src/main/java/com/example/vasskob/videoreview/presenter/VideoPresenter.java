@@ -24,11 +24,17 @@ public class VideoPresenter implements Presenter, LoaderManager.LoaderCallbacks<
     private MediaPlayer mediaPlayer;
     private boolean paused = false;
     private String selectedSpinner = "All videos";
+    private com.example.vasskob.videoreview.view.View view;
+
+    public VideoPresenter(com.example.vasskob.videoreview.view.View view) {
+        this.view = view;
+    }
 
     @Override
     public void getMediaItems(Callback callback) {
         mCallback = callback;
-//      mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
+    //    view.showData(callback);
+        // view.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
     }
 
     @Override
@@ -62,7 +68,7 @@ public class VideoPresenter implements Presenter, LoaderManager.LoaderCallbacks<
         if (mediaPlayer != null) {
             mediaPlayer.seekTo(start);
             mediaPlayer.start();
-            setMediaPlayerCountDown((end - start)*mediaPlayer.getDuration()/100);
+            setMediaPlayerCountDown((end - start) * mediaPlayer.getDuration() / 100);
         }
     }
 
@@ -94,9 +100,7 @@ public class VideoPresenter implements Presenter, LoaderManager.LoaderCallbacks<
         } else {
             initMediaPlayer(video);
             if (mediaPlayer.getDuration() > 10 * 1000) {
-
-                // TODO: 06.03.17 Return value for toast from fragment
-
+                view.showError("This video is longer than 10s");
             } else {
                 mediaPlayer.start();
             }

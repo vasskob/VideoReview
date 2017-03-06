@@ -2,6 +2,7 @@
     <string name="app_name">Video Review</string>
       <string name="permission_granted">Permission Granted, Now you can enjoy VideoReview</string>
     <string name="permission_denied">You cannot access VideoReview without allowing internal storage read permission</string>
+    <string name="list_is_empty">There is no video in your Gallery</string>
     <string-array name="video_duration" >
         <item>all videos</item>
         <item>10 second videos</item>

@@ -2,6 +2,7 @@ package com.example.vasskob.videoreview.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,17 +15,20 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import com.example.vasskob.videoreview.R;
+import com.example.vasskob.videoreview.model.data.Video;
 import com.example.vasskob.videoreview.presenter.VideoPresenter;
-import com.example.vasskob.videoreview.view.adapters.VideoListAdapter;
 import com.example.vasskob.videoreview.utils.MarginDecoration;
+import com.example.vasskob.videoreview.view.adapters.VideoListAdapter;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class VideoListFragment extends Fragment {
+public class VideoListFragment extends Fragment implements com.example.vasskob.videoreview.view.View {
 
     private static final int COUNT_OF_COLUMN = 5;
 
@@ -40,7 +44,8 @@ public class VideoListFragment extends Fragment {
     @Bind(R.id.video_duration_spinner)
     Spinner spinner;
 
-    private VideoPresenter videoPresenter = new VideoPresenter();
+    private VideoPresenter videoPresenter = new VideoPresenter(this);
+    private VideoListAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -68,7 +73,7 @@ public class VideoListFragment extends Fragment {
             }
         });
 
-        VideoListAdapter mAdapter = new VideoListAdapter(getActivity(), mVideoView);
+        mAdapter = new VideoListAdapter(getActivity(), mVideoView);
         mRecyclerView.setAdapter(mAdapter);
 
         String selectedDuration = spinner.getSelectedItem().toString();
@@ -83,9 +88,9 @@ public class VideoListFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position==0){
-                videoPresenter.onSpinnerSelected("All videos");}
-                else {
+                if (position == 0) {
+                    videoPresenter.onSpinnerSelected("All videos");
+                } else {
                     videoPresenter.onSpinnerSelected("10 second video");
                 }
                 Log.d("TAG", " videoSpinnerChangeListener spinner position = " + position);
@@ -110,8 +115,29 @@ public class VideoListFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        videoPresenter.stopVideo();
+    public void onStop() {
+        super.onStop();
+        if (videoPresenter != null) {
+            videoPresenter.stopVideo();
+        }
+    }
+
+    @Override
+    public void showData(List<Video> videoList) {
+        mAdapter.setVideoList(videoList);
+    }
+
+    @Override
+    public void showError(String error) {
+        makeToast(error);
+    }
+
+    @Override
+    public void showEmptyList() {
+        makeToast(getResources().getString(R.string.list_is_empty));
+    }
+
+    private void makeToast(String text) {
+        Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_LONG).show();
     }
 }
