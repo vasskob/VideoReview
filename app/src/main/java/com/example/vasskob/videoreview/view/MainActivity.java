@@ -15,18 +15,23 @@ import android.widget.LinearLayout;
 
 import com.example.vasskob.videoreview.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 200;
-    private LinearLayout linearLayout;
+
+    @Bind(R.id.linear_layout)
+    LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        linearLayout = (LinearLayout) findViewById(R.id.linear_layout);
+        ButterKnife.bind(this);
         linearLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         );
@@ -75,15 +80,15 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        int keyCode = event.getKeyCode();
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            finish();
-            return true;
-        }
-        return super.dispatchKeyEvent(event);
-    }
+//    @Override
+//    public boolean dispatchKeyEvent(KeyEvent event) {
+//        int keyCode = event.getKeyCode();
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            finish();
+//            return true;
+//        }
+//        return super.dispatchKeyEvent(event);
+//    }
 
 
 }

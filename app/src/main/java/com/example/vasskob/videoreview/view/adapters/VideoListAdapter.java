@@ -1,4 +1,4 @@
-package com.example.vasskob.videoreview;
+package com.example.vasskob.videoreview.view.adapters;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
@@ -9,31 +9,34 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
-import com.example.vasskob.videoreview.factories.MediaPresenterFactory;
-import com.example.vasskob.videoreview.model.Media;
-import com.example.vasskob.videoreview.presenter.MediaPresenter;
+import com.example.vasskob.videoreview.R;
+import com.example.vasskob.videoreview.model.data.Video;
+import com.example.vasskob.videoreview.presenter.Presenter;
+import com.example.vasskob.videoreview.presenter.VideoPresenter;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoListViewHolder> {
 
-    private MediaPresenter mMediaPresenter = null;
-    private List<Media> mMediaItems = null;
+    private Presenter mPresenter = null;
+    private List<Video> mVideoItems = null;
     private LayoutInflater mLayoutInflater = null;
     private final Context context;
-    private int mCurrentPosition=100;
-
+    private int mCurrentPosition = 100;
 
 
     public VideoListAdapter(FragmentActivity context, TextureView view) {
         mLayoutInflater = LayoutInflater.from(context);
-        mMediaPresenter = MediaPresenterFactory.getMediaPresenter(context, Constants.MEDIA_TYPE_VIDEO, view);
-        mMediaPresenter.getMediaItems(new MediaPresenter.Callback() {
+        mPresenter = new VideoPresenter();
+        mPresenter.getMediaItems(new Presenter.Callback() {
             @Override
-            public void onItemsAvailable(List<Media> items) {
-                mMediaItems = items;
+            public void onItemsAvailable(List<Video> items) {
+                mVideoItems = items;
                 VideoListAdapter.this.notifyDataSetChanged();
             }
         });
@@ -51,7 +54,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     public void onBindViewHolder(final VideoListViewHolder holder, final int position) {
 
         Glide.with(context)
-                .load(mMediaItems.get(position).getPath())
+                .load(mVideoItems.get(position).getPath())
                 .asBitmap()
                 .placeholder(R.drawable.video_pic_small)
                 .centerCrop()
@@ -62,38 +65,37 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMediaPresenter.onMediaItemClicked(mMediaItems.get(holder.getAdapterPosition()));
+                mPresenter.onMediaItemClicked(mVideoItems.get(holder.getAdapterPosition()));
                 mCurrentPosition = holder.getAdapterPosition();
+
+
+
                 VideoListAdapter.this.notifyDataSetChanged();
             }
         });
+
 
     }
 
     @Override
     public int getItemCount() {
-        if (mMediaItems == null) {
+        if (mVideoItems == null) {
             return 0;
         }
 
-        return mMediaItems.size();
+        return mVideoItems.size();
     }
 
 
     static class VideoListViewHolder extends RecyclerView.ViewHolder {
 
-//      private TextView mTitleView = null;
-
-        private RoundedImageView mThumbnail = null;
+        @Bind(R.id.video_thumbnail)
+        RoundedImageView mThumbnail;
 
         VideoListViewHolder(View view) {
             super(view);
-            mThumbnail = (RoundedImageView) view.findViewById(R.id.video_thumbnail);
-//          mTitleView = (TextView)view.findViewById(R.id.title);
-
-
+            ButterKnife.bind(this, view);
         }
     }
-
 
 }

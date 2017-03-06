@@ -1,58 +1,121 @@
 package com.example.vasskob.videoreview.presenter;
 
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.TextureView;
-import android.view.View;
 
-import com.example.vasskob.videoreview.Constants;
-import com.example.vasskob.videoreview.factories.MediaPlayerFactory;
-import com.example.vasskob.videoreview.model.Media;
-import com.example.vasskob.videoreview.model.Video;
+import com.example.vasskob.videoreview.model.data.Video;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
-public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallbacks<Cursor> {
+public class VideoPresenter implements Presenter, LoaderManager.LoaderCallbacks<Cursor> {
 
     private FragmentActivity mActivity = null;
     private Callback mCallback = null;
-    private static com.example.vasskob.videoreview.player.MediaPlayer mVideoPlayer = null;
-    private final TextureView textureView;
 
     private static final int VIDEO_LOADER_ID = 10;
-
-    public VideoPresenter(FragmentActivity activity, TextureView view) {
-        mActivity = activity;
-        mVideoPlayer = MediaPlayerFactory.getMediaPlayer(Constants.MEDIA_TYPE_VIDEO, view);
-        textureView = view;
-    }
+    private MediaPlayer mediaPlayer;
+    private boolean paused = false;
+    private String selectedSpinner = "All videos";
 
     @Override
     public void getMediaItems(Callback callback) {
         mCallback = callback;
-        mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
+//      mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
     }
-
 
     @Override
-    public void onMediaItemClicked(Media media) {
-
-        LinkedList<Media> video = new LinkedList<>();
-        video.add(media);
-        mVideoPlayer.playMedia(mActivity, video);
-        textureView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+    public void onMediaItemClicked(Video video) {
+        playVideo(video);
     }
 
-    public static void onBackPressed() {
-        mVideoPlayer.stopMedia();
+    private void setMediaPlayerCountDown(int timeInMs) {
+        CountDownTimer mMediaPlayerCountDown = new CountDownTimer(timeInMs, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+            }
+        };
+        mMediaPlayerCountDown.start();
     }
 
+    @Override
+    public void onSpinnerSelected(String selectedSpinner) {
+        this.selectedSpinner = selectedSpinner;
+    }
+
+    @Override
+    public void onRangeSelected(int start, int end) {
+        if (mediaPlayer != null) {
+            mediaPlayer.seekTo(start);
+            mediaPlayer.start();
+            setMediaPlayerCountDown((end - start)*mediaPlayer.getDuration()/100);
+        }
+    }
+
+    @Override
+    public void onVideoViewClicked() {
+        if (mediaPlayer != null) {
+            if (!paused) {
+                mediaPlayer.pause();
+                paused = !paused;
+            } else {
+                mediaPlayer.release();
+            }
+        }
+    }
+
+    @Override
+    public void stopVideo() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer = null;
+        }
+    }
+
+    private void playVideo(Video video) {
+
+        if (selectedSpinner.equals("All videos")) {
+            initMediaPlayer(video);
+            mediaPlayer.start();
+        } else {
+            initMediaPlayer(video);
+            if (mediaPlayer.getDuration() > 10 * 1000) {
+
+                // TODO: 06.03.17 Return value for toast from fragment
+
+            } else {
+                mediaPlayer.start();
+            }
+        }
+    }
+
+    private void initMediaPlayer(Video video) {
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+        }
+        try {
+            mediaPlayer.setDataSource(video.getPath());
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == VIDEO_LOADER_ID) {
@@ -64,19 +127,17 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
             loader.setSortOrder(MediaStore.Video.Media.DATE_ADDED + " DESC");
             return loader;
         }
-
         return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader.getId() == VIDEO_LOADER_ID) {
-            LinkedList<Media> mediaList = new LinkedList<>();
+            LinkedList<Video> mediaList = new LinkedList<>();
 
             if (data != null && data.getCount() > 0) {
                 int idIndex = data.getColumnIndex(MediaStore.Video.Media._ID);
                 int titleIndex = data.getColumnIndex(MediaStore.Video.Media.TITLE);
-
                 int pathIndex = data.getColumnIndex(MediaStore.Video.Media.DATA);
 
                 while (data.moveToNext()) {
@@ -98,7 +159,7 @@ public class VideoPresenter implements MediaPresenter, LoaderManager.LoaderCallb
     public void onLoaderReset(Loader<Cursor> loader) {
         if (loader.getId() == VIDEO_LOADER_ID) {
             if (mCallback != null) {
-                mCallback.onItemsAvailable(new LinkedList<Media>());
+                mCallback.onItemsAvailable(new LinkedList<Video>());
             }
         }
     }

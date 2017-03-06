@@ -1,7 +1,7 @@
-package com.example.vasskob.videoreview.model;
+package com.example.vasskob.videoreview.model.data;
 
 
-public class Video implements Media {
+public class Video {
     private final long mId;
     private final String mTitle;
     private final String mPath;
@@ -15,18 +15,15 @@ public class Video implements Media {
 
     }
 
-    @Override
+
     public long getId() {
         return mId;
     }
 
-    @Override
     public String getTitle() {
         return mTitle;
     }
 
-
-    @Override
     public String getPath() {
         return mPath;
     }
