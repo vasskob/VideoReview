@@ -1,9 +1,14 @@
 package com.example.vasskob.videoreview.view;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,21 +21,24 @@ import android.widget.Spinner;
 
 import com.example.vasskob.videoreview.R;
 import com.example.vasskob.videoreview.model.data.Video;
+import com.example.vasskob.videoreview.presenter.MainPresenter;
 import com.example.vasskob.videoreview.presenter.VideoPresenter;
 import com.example.vasskob.videoreview.utils.MarginDecoration;
 import com.example.vasskob.videoreview.view.adapters.VideoListAdapter;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class VideoListFragment extends Fragment implements com.example.vasskob.videoreview.view.View {
+public class VideoListFragment extends Fragment implements com.example.vasskob.videoreview.view.View, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int COUNT_OF_COLUMN = 5;
+    private static final int VIDEO_LOADER_ID = 10;
 
     @Bind(R.id.rv_video_list)
     RecyclerView mRecyclerView;
@@ -44,8 +52,11 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     @Bind(R.id.video_duration_spinner)
     Spinner spinner;
 
-    private VideoPresenter videoPresenter = new VideoPresenter(this);
+    //private VideoPresenter videoPresenter = new VideoPresenter(getActivity());
+    private VideoPresenter videoPresenter = new VideoPresenter();
+
     private VideoListAdapter mAdapter;
+    private MainPresenter.Callback mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -73,13 +84,13 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
             }
         });
 
-        mAdapter = new VideoListAdapter(getActivity(), mVideoView);
+        mAdapter = new VideoListAdapter(getActivity(), mVideoView, this);
         mRecyclerView.setAdapter(mAdapter);
+        videoPresenter.onAttachView(this);
 
-        String selectedDuration = spinner.getSelectedItem().toString();
+//      String selectedDuration = spinner.getSelectedItem().toString();
 
         videoSpinnerChangeListener();
-
         videoSeekBarChangeListener();
 
     }
@@ -93,7 +104,7 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
                 } else {
                     videoPresenter.onSpinnerSelected("10 second video");
                 }
-                Log.d("TAG", " videoSpinnerChangeListener spinner position = " + position);
+                Log.d("TAG", " videoSpinnerChangeListener, spinner position = " + position);
             }
 
             @Override
@@ -119,7 +130,10 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
         super.onStop();
         if (videoPresenter != null) {
             videoPresenter.stopVideo();
+            videoPresenter.onDetachView();
         }
+
+
     }
 
     @Override
@@ -137,7 +151,60 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
         makeToast(getResources().getString(R.string.list_is_empty));
     }
 
+    @Override
+    public void startLoading() {
+        getActivity().getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
+    }
+
     private void makeToast(String text) {
         Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if (id == VIDEO_LOADER_ID) {
+            CursorLoader loader = new CursorLoader(getActivity());
+            loader.setUri(MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+            loader.setProjection(null);
+            loader.setSelection(null);
+            loader.setSelectionArgs(null);
+            loader.setSortOrder(MediaStore.Video.Media.DATE_ADDED + " DESC");
+            return loader;
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (loader.getId() == VIDEO_LOADER_ID) {
+            LinkedList<Video> mediaList = new LinkedList<>();
+
+            if (data != null && data.getCount() > 0) {
+                int idIndex = data.getColumnIndex(MediaStore.Video.Media._ID);
+                int titleIndex = data.getColumnIndex(MediaStore.Video.Media.TITLE);
+                int pathIndex = data.getColumnIndex(MediaStore.Video.Media.DATA);
+
+                while (data.moveToNext()) {
+                    long id = data.getLong(idIndex);
+                    String title = data.getString(titleIndex);
+                    String path = data.getString(pathIndex);
+
+                    Video video = new Video(id, title, path);
+                    mediaList.add(video);
+                }
+            }
+            if (mCallback != null) {
+                mCallback.onItemsAvailable(mediaList);
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if (loader.getId() == VIDEO_LOADER_ID) {
+            if (mCallback != null) {
+                mCallback.onItemsAvailable(new LinkedList<Video>());
+            }
+        }
     }
 }

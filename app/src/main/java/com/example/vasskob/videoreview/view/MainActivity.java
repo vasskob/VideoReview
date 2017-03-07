@@ -32,9 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        linearLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        );
+
         if (checkPermission()) {
             requestPermission();
         } else {
@@ -80,15 +78,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
     }
 
-//    @Override
-//    public boolean dispatchKeyEvent(KeyEvent event) {
-//        int keyCode = event.getKeyCode();
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            finish();
-//            return true;
-//        }
-//        return super.dispatchKeyEvent(event);
-//    }
+
 
 
 }

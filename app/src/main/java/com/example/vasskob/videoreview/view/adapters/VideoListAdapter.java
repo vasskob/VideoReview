@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.example.vasskob.videoreview.R;
 import com.example.vasskob.videoreview.model.data.Video;
-import com.example.vasskob.videoreview.presenter.Presenter;
+import com.example.vasskob.videoreview.presenter.MainPresenter;
 import com.example.vasskob.videoreview.presenter.VideoPresenter;
 import com.makeramen.roundedimageview.RoundedImageView;
 
@@ -21,32 +21,39 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoListViewHolder> implements com.example.vasskob.videoreview.view.View{
+public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoListViewHolder> implements com.example.vasskob.videoreview.view.View {
 
-    private Presenter mPresenter = null;
+    private VideoPresenter mPresenter = null;
     private LayoutInflater mLayoutInflater = null;
     private final Context context;
     private int mCurrentPosition = 100;
     private List<Video> videoList;
+    private TextureView textureView;
 
 
-    public VideoListAdapter(FragmentActivity context, TextureView view) {
+    public VideoListAdapter(final FragmentActivity context, TextureView textureView, final com.example.vasskob.videoreview.view.View view) {
         mLayoutInflater = LayoutInflater.from(context);
-        mPresenter = new VideoPresenter(this);
-        mPresenter.getMediaItems(new Presenter.Callback() {
+        mPresenter = new VideoPresenter();
+
+        mPresenter.getMediaItems(new MainPresenter.Callback() {
             @Override
             public void onItemsAvailable(List<Video> items) {
+                if (items.size() == 0) {
+                view.showError(context.getResources().getString(R.string.list_is_empty));
+                }
                 videoList = items;
                 VideoListAdapter.this.notifyDataSetChanged();
             }
         });
+
+        view.startLoading();
         this.context = context;
+        this.textureView = textureView;
     }
 
     public void setVideoList(List<Video> videoList) {
         this.videoList = videoList;
         notifyDataSetChanged();
-
     }
 
     @Override
@@ -54,7 +61,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         View view = mLayoutInflater.inflate(R.layout.video_item_layout, parent, false);
         return new VideoListViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(final VideoListViewHolder holder, final int position) {
@@ -82,7 +88,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     @Override
     public int getItemCount() {
-        if (videoList==null) return 0;
+        if (videoList == null) return 0;
         return videoList.size();
     }
 
@@ -98,6 +104,11 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     @Override
     public void showEmptyList() {
+
+    }
+
+    @Override
+    public void startLoading() {
 
     }
 

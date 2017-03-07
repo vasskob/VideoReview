@@ -1,21 +1,15 @@
 package com.example.vasskob.videoreview.presenter;
 
-import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 
 import com.example.vasskob.videoreview.model.data.Video;
+import com.example.vasskob.videoreview.view.View;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
-public class VideoPresenter implements Presenter, LoaderManager.LoaderCallbacks<Cursor> {
+public class VideoPresenter implements MainPresenter {
 
     private FragmentActivity mActivity = null;
     private Callback mCallback = null;
@@ -26,15 +20,15 @@ public class VideoPresenter implements Presenter, LoaderManager.LoaderCallbacks<
     private String selectedSpinner = "All videos";
     private com.example.vasskob.videoreview.view.View view;
 
-    public VideoPresenter(com.example.vasskob.videoreview.view.View view) {
-        this.view = view;
-    }
+//    public VideoPresenter(FragmentActivity fragmentActivity) {
+//        this.mActivity = fragmentActivity;
+//    }
+
 
     @Override
     public void getMediaItems(Callback callback) {
         mCallback = callback;
-    //    view.showData(callback);
-        // view.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
+      //  mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
     }
 
     @Override
@@ -112,60 +106,30 @@ public class VideoPresenter implements Presenter, LoaderManager.LoaderCallbacks<
             mediaPlayer = new MediaPlayer();
         }
         try {
+
+//          mp.setDisplay(((SurfaceView) findViewById(R.id.surfaceView)).getHolder());
+//          mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
+
             mediaPlayer.setDataSource(video.getPath());
             mediaPlayer.prepareAsync();
+            mediaPlayer.setLooping(true);
+            mediaPlayer.start();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    //Loader
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (id == VIDEO_LOADER_ID) {
-            CursorLoader loader = new CursorLoader(mActivity);
-            loader.setUri(MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-            loader.setProjection(null);
-            loader.setSelection(null);
-            loader.setSelectionArgs(null);
-            loader.setSortOrder(MediaStore.Video.Media.DATE_ADDED + " DESC");
-            return loader;
-        }
-        return null;
+    public void onAttachView(View view) {
+        this.view = view;
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader.getId() == VIDEO_LOADER_ID) {
-            LinkedList<Video> mediaList = new LinkedList<>();
-
-            if (data != null && data.getCount() > 0) {
-                int idIndex = data.getColumnIndex(MediaStore.Video.Media._ID);
-                int titleIndex = data.getColumnIndex(MediaStore.Video.Media.TITLE);
-                int pathIndex = data.getColumnIndex(MediaStore.Video.Media.DATA);
-
-                while (data.moveToNext()) {
-                    long id = data.getLong(idIndex);
-                    String title = data.getString(titleIndex);
-                    String path = data.getString(pathIndex);
-
-                    Video video = new Video(id, title, path);
-                    mediaList.add(video);
-                }
-            }
-            if (mCallback != null) {
-                mCallback.onItemsAvailable(mediaList);
-            }
-        }
+    public void onDetachView() {
+        view = null;
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        if (loader.getId() == VIDEO_LOADER_ID) {
-            if (mCallback != null) {
-                mCallback.onItemsAvailable(new LinkedList<Video>());
-            }
-        }
-    }
+
 }
 

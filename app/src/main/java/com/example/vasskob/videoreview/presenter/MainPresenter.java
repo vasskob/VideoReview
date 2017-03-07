@@ -4,7 +4,7 @@ import com.example.vasskob.videoreview.model.data.Video;
 
 import java.util.List;
 
-public interface Presenter {
+public interface MainPresenter extends  BasePresenter {
 
 
     void getMediaItems(Callback callback);
@@ -13,7 +13,6 @@ public interface Presenter {
     void onRangeSelected(int start,int end);
     void onVideoViewClicked();
     void stopVideo();
-
 
     interface Callback{
         void onItemsAvailable(List<Video> items);
