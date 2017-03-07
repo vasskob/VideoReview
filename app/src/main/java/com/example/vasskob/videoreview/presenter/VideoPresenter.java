@@ -3,6 +3,7 @@ package com.example.vasskob.videoreview.presenter;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.example.vasskob.videoreview.model.data.Video;
 import com.example.vasskob.videoreview.view.View;
@@ -17,19 +18,19 @@ public class VideoPresenter implements MainPresenter {
     private static final int VIDEO_LOADER_ID = 10;
     private MediaPlayer mediaPlayer;
     private boolean paused = false;
-    private String selectedSpinner = "All videos";
+    private int selectedSpinner;
     private com.example.vasskob.videoreview.view.View view;
+    private int videoDuration;
 
 //    public VideoPresenter(FragmentActivity fragmentActivity) {
 //        this.mActivity = fragmentActivity;
 //    }
 
-
-    @Override
-    public void getMediaItems(Callback callback) {
-        mCallback = callback;
-      //  mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
-    }
+//    @Override
+//    public void getMediaItems(Callback callback) {
+//        mCallback = callback;
+//        //  mActivity.getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
+//    }
 
     @Override
     public void onMediaItemClicked(Video video) {
@@ -53,8 +54,9 @@ public class VideoPresenter implements MainPresenter {
     }
 
     @Override
-    public void onSpinnerSelected(String selectedSpinner) {
+    public void onSpinnerSelected(int selectedSpinner) {
         this.selectedSpinner = selectedSpinner;
+        Log.d("Log", " presenter.onSpinnerSelected selectedSpinner = " + selectedSpinner);
     }
 
     @Override
@@ -87,33 +89,38 @@ public class VideoPresenter implements MainPresenter {
     }
 
     private void playVideo(Video video) {
+        stopVideo();
+        initMediaPlayer(video);
+        if (selectedSpinner == 1 && videoDuration > 10 * 1000) {
+            mediaPlayer.stop();
+            view.showError("This video is longer than 10s");
 
-        if (selectedSpinner.equals("All videos")) {
-            initMediaPlayer(video);
-            mediaPlayer.start();
-        } else {
-            initMediaPlayer(video);
-            if (mediaPlayer.getDuration() > 10 * 1000) {
-                view.showError("This video is longer than 10s");
-            } else {
-                mediaPlayer.start();
-            }
         }
+        Log.d("Log", "playVideo mediaPlayer duration = " + videoDuration + " spinner = "+ selectedSpinner);
+//        view.showError("This video is longer than 10s");
+
     }
 
     private void initMediaPlayer(Video video) {
-        if (mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-        }
+//        if (mediaPlayer == null) {
+//            mediaPlayer = new MediaPlayer();
+//        }
         try {
-
+            mediaPlayer = new MediaPlayer();
 //          mp.setDisplay(((SurfaceView) findViewById(R.id.surfaceView)).getHolder());
 //          mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
 
             mediaPlayer.setDataSource(video.getPath());
             mediaPlayer.prepareAsync();
             mediaPlayer.setLooping(true);
-            mediaPlayer.start();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                    videoDuration = mp.getDuration();
+                }
+            });
+
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -35,7 +35,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         mLayoutInflater = LayoutInflater.from(context);
         mPresenter = new VideoPresenter();
 
-        mPresenter.getMediaItems(new MainPresenter.Callback() {
+        view.startLoading(new MainPresenter.Callback() {
             @Override
             public void onItemsAvailable(List<Video> items) {
                 if (items.size() == 0) {
@@ -46,7 +46,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             }
         });
 
-        view.startLoading();
         this.context = context;
         this.textureView = textureView;
     }
@@ -92,10 +91,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         return videoList.size();
     }
 
-    @Override
-    public void showData(List<Video> videoList) {
-
-    }
+//    @Override
+//    public void showData(List<Video> videoList) {
+//
+//    }
 
     @Override
     public void showError(String error) {
@@ -108,9 +107,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     }
 
     @Override
-    public void startLoading() {
+    public void startLoading(MainPresenter.Callback callback) {
 
     }
+
 
     static class VideoListViewHolder extends RecyclerView.ViewHolder {
 

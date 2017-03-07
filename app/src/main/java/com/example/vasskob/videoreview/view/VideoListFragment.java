@@ -54,7 +54,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
 
     //private VideoPresenter videoPresenter = new VideoPresenter(getActivity());
     private VideoPresenter videoPresenter = new VideoPresenter();
-
     private VideoListAdapter mAdapter;
     private MainPresenter.Callback mCallback;
 
@@ -99,17 +98,13 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    videoPresenter.onSpinnerSelected("All videos");
-                } else {
-                    videoPresenter.onSpinnerSelected("10 second video");
-                }
+                videoPresenter.onSpinnerSelected(position);
                 Log.d("TAG", " videoSpinnerChangeListener, spinner position = " + position);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                videoPresenter.onSpinnerSelected("All videos");
+                videoPresenter.onSpinnerSelected(0);
             }
         });
     }
@@ -136,10 +131,10 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
 
     }
 
-    @Override
-    public void showData(List<Video> videoList) {
-        mAdapter.setVideoList(videoList);
-    }
+//    @Override
+//    public void showData(List<Video> videoList) {
+//        mAdapter.setVideoList(videoList);
+//    }
 
     @Override
     public void showError(String error) {
@@ -152,7 +147,8 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     }
 
     @Override
-    public void startLoading() {
+    public void startLoading(MainPresenter.Callback callback) {
+        mCallback=callback;
         getActivity().getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
     }
 
