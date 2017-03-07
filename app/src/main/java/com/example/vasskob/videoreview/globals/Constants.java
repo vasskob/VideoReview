@@ -1,4 +1,4 @@
-package com.example.vasskob.videoreview;
+package com.example.vasskob.videoreview.globals;
 
 public class Constants {
 

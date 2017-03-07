@@ -1,18 +1,16 @@
 package com.example.vasskob.videoreview.factories;
 
-import android.view.TextureView;
-
-import com.example.vasskob.videoreview.Constants;
-import com.example.vasskob.videoreview.player.MediaPlayer;
-import com.example.vasskob.videoreview.player.VideoPlayer;
+import com.example.vasskob.videoreview.globals.Constants;
+import com.example.vasskob.videoreview.ui.holder.UiHolder;
+import com.example.vasskob.videoreview.view.MyMediaPlayerImpl;
 
 
 public class MediaPlayerFactory {
 
-    public static MediaPlayer getMediaPlayer(int type, TextureView textureView) {
+    public static MyMediaPlayerImpl getMediaPlayer(int type, UiHolder uiHolder) {
         switch (type) {
             case Constants.MEDIA_TYPE_VIDEO:
-                return new VideoPlayer(textureView);
+                return new MyMediaPlayerImpl(uiHolder);
 
             default:
                 return null;

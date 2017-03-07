@@ -1,6 +1,5 @@
-package com.example.vasskob.videoreview.view;
+package com.example.vasskob.videoreview.ui;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,13 +12,21 @@ import android.view.ViewGroup;
 
 import com.example.vasskob.videoreview.R;
 import com.example.vasskob.videoreview.VideoListAdapter;
+import com.example.vasskob.videoreview.factories.MediaPresenterFactory;
+import com.example.vasskob.videoreview.globals.Constants;
+import com.example.vasskob.videoreview.model.pojo.MediaItem;
+import com.example.vasskob.videoreview.presenter.MediaPresenter;
+import com.example.vasskob.videoreview.presenter.MediaPresenterImpl;
+import com.example.vasskob.videoreview.ui.holder.UiHolder;
 import com.example.vasskob.videoreview.utils.MarginDecoration;
+
+import java.util.List;
 
 
 public class VideoListFragment extends Fragment {
 
-    private MediaPlayer mMediaPlayer;
     private View rootView;
+    private MediaPresenter mMediaPresenter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -37,24 +44,26 @@ public class VideoListFragment extends Fragment {
 
         TextureView mVideoView = (TextureView) rootView.findViewById(R.id.video_view);
         mVideoView.setOpaque(false);
-//       mVideoView.setSurfaceTextureListener(this);
-        VideoListAdapter mAdapter = new VideoListAdapter(getActivity(), mVideoView);
+
+        UiHolder uiHolder = new UiHolder(getActivity(), mVideoView);
+        mMediaPresenter = MediaPresenterFactory.getMediaPresenter(Constants.MEDIA_TYPE_VIDEO);
+        mMediaPresenter.onAttachView(uiHolder);
+
+        final VideoListAdapter mAdapter = new VideoListAdapter(getActivity(), mMediaPresenter);
         mRecyclerView.setAdapter(mAdapter);
 
+        mMediaPresenter.onLoadMediaItems(new MediaPresenterImpl.Callback() {
+            @Override
+            public void onItemsAvailable(List<MediaItem> items) {
+                mAdapter.setMediaItems(items);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
-
-
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-
-
-        // TODO: 03.03.17  presenter onDestroy mediaPlayer .release(); mediaPlayer=null;
+    public void onStop() {
+        super.onStop();
+        mMediaPresenter.onDetachView();
     }
-
 }

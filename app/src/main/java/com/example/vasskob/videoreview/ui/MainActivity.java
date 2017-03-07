@@ -1,4 +1,4 @@
-package com.example.vasskob.videoreview.view;
+package com.example.vasskob.videoreview.ui;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -84,6 +84,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.dispatchKeyEvent(event);
     }
-
-
 }
