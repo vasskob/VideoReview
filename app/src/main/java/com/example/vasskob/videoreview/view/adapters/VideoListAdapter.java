@@ -21,7 +21,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoListViewHolder> implements com.example.vasskob.videoreview.view.View {
+public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoListViewHolder> {
 
     private VideoPresenter mPresenter = null;
     private LayoutInflater mLayoutInflater = null;
@@ -31,18 +31,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     private TextureView textureView;
 
 
-    public VideoListAdapter(final FragmentActivity context, TextureView textureView, final com.example.vasskob.videoreview.view.View view) {
+    public VideoListAdapter(final FragmentActivity context, VideoPresenter videoPresenter, TextureView textureView, final com.example.vasskob.videoreview.view.View view) {
         mLayoutInflater = LayoutInflater.from(context);
-        mPresenter = new VideoPresenter();
+        mPresenter = videoPresenter;
 
         view.startLoading(new MainPresenter.Callback() {
             @Override
             public void onItemsAvailable(List<Video> items) {
                 if (items.size() == 0) {
-                view.showError(context.getResources().getString(R.string.list_is_empty));
+                    view.showError(context.getResources().getString(R.string.list_is_empty));
                 }
                 videoList = items;
-                VideoListAdapter.this.notifyDataSetChanged();
+                notifyDataSetChanged();
             }
         });
 
@@ -50,10 +50,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         this.textureView = textureView;
     }
 
-    public void setVideoList(List<Video> videoList) {
-        this.videoList = videoList;
-        notifyDataSetChanged();
-    }
 
     @Override
     public VideoListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -79,7 +75,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 mPresenter.onMediaItemClicked(videoList.get(holder.getAdapterPosition()));
                 mCurrentPosition = holder.getAdapterPosition();
 
-
                 VideoListAdapter.this.notifyDataSetChanged();
             }
         });
@@ -89,26 +84,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     public int getItemCount() {
         if (videoList == null) return 0;
         return videoList.size();
-    }
-
-//    @Override
-//    public void showData(List<Video> videoList) {
-//
-//    }
-
-    @Override
-    public void showError(String error) {
-
-    }
-
-    @Override
-    public void showEmptyList() {
-
-    }
-
-    @Override
-    public void startLoading(MainPresenter.Callback callback) {
-
     }
 
 

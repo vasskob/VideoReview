@@ -29,7 +29,6 @@ import com.example.vasskob.videoreview.view.adapters.VideoListAdapter;
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,8 +51,9 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     @Bind(R.id.video_duration_spinner)
     Spinner spinner;
 
+
     //private VideoPresenter videoPresenter = new VideoPresenter(getActivity());
-    private VideoPresenter videoPresenter = new VideoPresenter();
+    private VideoPresenter videoPresenter;
     private VideoListAdapter mAdapter;
     private MainPresenter.Callback mCallback;
 
@@ -82,10 +82,11 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
                 videoPresenter.onVideoViewClicked();
             }
         });
-
-        mAdapter = new VideoListAdapter(getActivity(), mVideoView, this);
-        mRecyclerView.setAdapter(mAdapter);
+        videoPresenter = new VideoPresenter(mVideoView);
         videoPresenter.onAttachView(this);
+        mAdapter = new VideoListAdapter(getActivity(), videoPresenter, mVideoView, this);
+        mRecyclerView.setAdapter(mAdapter);
+
 
 //      String selectedDuration = spinner.getSelectedItem().toString();
 
@@ -127,8 +128,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
             videoPresenter.stopVideo();
             videoPresenter.onDetachView();
         }
-
-
     }
 
 //    @Override
@@ -148,12 +147,12 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
 
     @Override
     public void startLoading(MainPresenter.Callback callback) {
-        mCallback=callback;
+        mCallback = callback;
         getActivity().getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
     }
 
     private void makeToast(String text) {
-        Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -203,4 +202,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
             }
         }
     }
+
+
 }

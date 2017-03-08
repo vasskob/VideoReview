@@ -8,7 +8,7 @@
     <TextureView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="400dp"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"/>
 
@@ -16,7 +16,7 @@
         android:id="@+id/video_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/video_duration_spinner"
+        android:layout_below="@+id/video_view"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         app:activeColor="@color/colorAccent"
@@ -26,7 +26,7 @@
         android:id="@+id/video_duration_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/rv_video_list"
+        android:layout_below="@+id/video_seek_bar"
         android:entries="@array/video_duration"
         android:dropDownWidth="1000dp"/>
 
@@ -35,7 +35,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/rv_video_list"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+      android:layout_below="@+id/video_duration_spinner"
         android:scrollbars="vertical"/>
 </RelativeLayout>
