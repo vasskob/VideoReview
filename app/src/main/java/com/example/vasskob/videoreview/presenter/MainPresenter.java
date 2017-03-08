@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface MainPresenter extends  BasePresenter {
 
-    void onMediaItemClicked(Video video);
+    void onVideoItemClicked(Video video);
     void onSpinnerSelected(int item);
     void onRangeSelected(int start,int end);
     void onVideoViewClicked();

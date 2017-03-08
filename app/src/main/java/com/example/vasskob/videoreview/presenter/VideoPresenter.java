@@ -11,6 +11,7 @@ import com.example.vasskob.videoreview.player.VideoPlayer;
 import com.example.vasskob.videoreview.player.VideoPlayerImpl;
 import com.example.vasskob.videoreview.view.VideoView;
 
+import java.io.IOException;
 import java.util.List;
 
 public class VideoPresenter implements MainPresenter {
@@ -23,15 +24,17 @@ public class VideoPresenter implements MainPresenter {
     private Model mModel;
 
     @Override
-    public void onMediaItemClicked(Video video) {
-
-        if (selectedSpinner == 1 && video.getDuration() > 10 * 1000) {
-            mVideoview.showError("This video is longer than 10s");
+    public void onVideoItemClicked(Video video) {
+        if (selectedSpinner != 1 || video.getDuration() <= 10 * 1000) {
+            try {
+                videoPlayer.playMedia(video);
+                mVideoview.showInfo(video.getTitle() + " is playing");
+            } catch (IOException e) {
+                mVideoview.showError("IOException there is no file to play");
+            }
         } else {
-            videoPlayer.playMedia(video);
-            mVideoview.showInfo(video.getTitle() + " is playing");
+            mVideoview.showError("This video is longer than 10s");
         }
-
     }
 
     public void addAll(List<Video> videos) {
