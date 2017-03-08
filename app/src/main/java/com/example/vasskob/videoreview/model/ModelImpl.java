@@ -13,12 +13,12 @@ public class ModelImpl implements Model {
     }
 
     @Override
-    public List<Video> getVideoList() {
+    public List<Video> getVideos() {
         return videos;
     }
 
     @Override
-    public void addVideo(Video video) {
+    public void add(Video video) {
         videos.add(video);
     }
 }

@@ -28,13 +28,16 @@ import com.example.vasskob.videoreview.view.adapters.VideoListAdapter;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class VideoListFragment extends Fragment implements com.example.vasskob.videoreview.view.View, LoaderManager.LoaderCallbacks<Cursor> {
+public class VideoListFragment extends Fragment implements VideoView, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int COUNT_OF_COLUMN = 5;
     private static final int VIDEO_LOADER_ID = 10;
@@ -43,7 +46,7 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     RecyclerView mRecyclerView;
 
     @Bind(R.id.video_view)
-    TextureView mVideoView;
+    TextureView mTextureView;
 
     @Bind(R.id.video_seek_bar)
     RangeSeekBar mVideoSeekBar;
@@ -53,12 +56,12 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
 
     private VideoPresenter videoPresenter;
     private VideoListAdapter mAdapter;
-    private MainPresenter.Callback mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.video_fragment_layout, parent, false);
         ButterKnife.bind(this, rootView);
+        getActivity().getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
         return rootView;
     }
 
@@ -70,18 +73,18 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), COUNT_OF_COLUMN));
 
-        mVideoView.setOpaque(false);
-        mVideoView.getLayoutParams().height = mVideoView.getWidth();
-
-        mVideoView.setOnClickListener(new View.OnClickListener() {
+        mTextureView.setOpaque(false);
+        mTextureView.getLayoutParams().height = mTextureView.getWidth();
+        mTextureView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 videoPresenter.onVideoViewClicked();
             }
         });
-        videoPresenter = new VideoPresenter(mVideoView);
+        videoPresenter = new VideoPresenter();
         videoPresenter.onAttachView(this);
-        mAdapter = new VideoListAdapter(getActivity(), videoPresenter, mVideoView, this);
+
+        mAdapter = new VideoListAdapter(getActivity(), videoPresenter);
         mRecyclerView.setAdapter(mAdapter);
 
         videoSpinnerChangeListener();
@@ -118,15 +121,14 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     public void onStop() {
         super.onStop();
         if (videoPresenter != null) {
-            videoPresenter.stopVideo();
             videoPresenter.onDetachView();
         }
     }
 
-//    @Override
-//    public void showData(List<Video> videoList) {
-//        mAdapter.setVideoList(videoList);
-//    }
+    @Override
+    public void showData(List<Video> list) {
+        mAdapter.setRepoList(list);
+    }
 
     @Override
     public void showError(String error) {
@@ -139,14 +141,13 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     }
 
     @Override
-    public void startLoading(MainPresenter.Callback callback) {
-        mCallback = callback;
-        getActivity().getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
+    public void showInfo(String s) {
+        makeToast(s);
     }
 
     @Override
-    public void showInfo(String s) {
-        makeToast(s);
+    public TextureView getTextureView() {
+        return mTextureView;
     }
 
     private void makeToast(String text) {
@@ -170,7 +171,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader.getId() == VIDEO_LOADER_ID) {
-
             if (data != null && data.getCount() > 0) {
                 int idIndex = data.getColumnIndex(MediaStore.Video.Media._ID);
                 int titleIndex = data.getColumnIndex(MediaStore.Video.Media.TITLE);
@@ -186,19 +186,14 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
                     videoPresenter.add(video);
                 }
             }
-            if (mCallback != null) {
-                mCallback.onItemsAvailable(videoPresenter.getVideos());
-            }
+            showData(videoPresenter.getVideos());
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         if (loader.getId() == VIDEO_LOADER_ID) {
-            if (mCallback != null) {
-                mCallback.onItemsAvailable(new LinkedList<Video>());
-            }
+            showData(Collections.<Video>emptyList());
         }
     }
-
 }
