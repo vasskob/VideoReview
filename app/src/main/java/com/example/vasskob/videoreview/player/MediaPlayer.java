@@ -5,7 +5,7 @@ import com.example.vasskob.videoreview.model.data.Video;
 
 public interface MediaPlayer {
     void playMedia(Video video);
-    int getVideoDuration();
+ //   int getVideoDuration();
     void stopMedia();
 
 }

@@ -4,6 +4,7 @@ import com.example.vasskob.videoreview.model.data.Video;
 
 import java.util.List;
 
-interface Model {
+public interface Model {
  List<Video> getVideoList();
+ void addVideo(Video video);
 }

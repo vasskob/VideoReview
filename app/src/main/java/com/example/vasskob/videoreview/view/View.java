@@ -1,10 +1,7 @@
 package com.example.vasskob.videoreview.view;
 
 
-import com.example.vasskob.videoreview.model.data.Video;
 import com.example.vasskob.videoreview.presenter.MainPresenter;
-
-import java.util.List;
 
 public interface View {
 
@@ -16,4 +13,5 @@ public interface View {
 
     void startLoading(MainPresenter.Callback callback);
 
+    void showInfo(String s);
 }

@@ -51,8 +51,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     @Bind(R.id.video_duration_spinner)
     Spinner spinner;
 
-
-    //private VideoPresenter videoPresenter = new VideoPresenter(getActivity());
     private VideoPresenter videoPresenter;
     private VideoListAdapter mAdapter;
     private MainPresenter.Callback mCallback;
@@ -67,7 +65,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
 
         mRecyclerView.addItemDecoration(new MarginDecoration(getContext()));
         mRecyclerView.setHasFixedSize(true);
@@ -87,9 +84,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
         mAdapter = new VideoListAdapter(getActivity(), videoPresenter, mVideoView, this);
         mRecyclerView.setAdapter(mAdapter);
 
-
-//      String selectedDuration = spinner.getSelectedItem().toString();
-
         videoSpinnerChangeListener();
         videoSeekBarChangeListener();
 
@@ -100,7 +94,6 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 videoPresenter.onSpinnerSelected(position);
-                Log.d("TAG", " videoSpinnerChangeListener, spinner position = " + position);
             }
 
             @Override
@@ -151,8 +144,13 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
         getActivity().getSupportLoaderManager().initLoader(VIDEO_LOADER_ID, null, this);
     }
 
+    @Override
+    public void showInfo(String s) {
+        makeToast(s);
+    }
+
     private void makeToast(String text) {
-            Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -172,24 +170,24 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader.getId() == VIDEO_LOADER_ID) {
-            LinkedList<Video> mediaList = new LinkedList<>();
 
             if (data != null && data.getCount() > 0) {
                 int idIndex = data.getColumnIndex(MediaStore.Video.Media._ID);
                 int titleIndex = data.getColumnIndex(MediaStore.Video.Media.TITLE);
                 int pathIndex = data.getColumnIndex(MediaStore.Video.Media.DATA);
+                int durationIndex = data.getColumnIndex(MediaStore.Video.Media.DURATION);
 
                 while (data.moveToNext()) {
                     long id = data.getLong(idIndex);
                     String title = data.getString(titleIndex);
                     String path = data.getString(pathIndex);
-
-                    Video video = new Video(id, title, path);
-                    mediaList.add(video);
+                    int duration = data.getInt(durationIndex);
+                    Video video = new Video(id, title, path,duration);
+                    videoPresenter.add(video);
                 }
             }
             if (mCallback != null) {
-                mCallback.onItemsAvailable(mediaList);
+                mCallback.onItemsAvailable(videoPresenter.getVideos());
             }
         }
     }
@@ -202,6 +200,5 @@ public class VideoListFragment extends Fragment implements com.example.vasskob.v
             }
         }
     }
-
 
 }

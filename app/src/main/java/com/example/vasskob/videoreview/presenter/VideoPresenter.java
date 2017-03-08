@@ -6,9 +6,13 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.TextureView;
 
+import com.example.vasskob.videoreview.model.Model;
+import com.example.vasskob.videoreview.model.ModelImpl;
 import com.example.vasskob.videoreview.model.data.Video;
 import com.example.vasskob.videoreview.player.VideoPlayer;
 import com.example.vasskob.videoreview.view.View;
+
+import java.util.List;
 
 public class VideoPresenter implements MainPresenter {
 
@@ -23,54 +27,39 @@ public class VideoPresenter implements MainPresenter {
     private com.example.vasskob.videoreview.view.View view;
     private int videoDuration;
     VideoPlayer videoPlayer;
+    private final Model modelodel;
 
     public VideoPresenter(TextureView textureView) {
         this.textureView = textureView;
         videoPlayer = new VideoPlayer(textureView);
+        modelodel = new ModelImpl();
     }
 
     @Override
     public void onMediaItemClicked(Video video) {
-        initMediaPlayer(video);
-        if (selectedSpinner == 1 && videoDuration > 10 * 1000) {
-            videoPlayer.stopMedia();
-            view.showError("This video is longer than 10s");
-        }
-        Log.d("Log", "playVideo mediaPlayer duration = " + videoDuration + " spinner = " + selectedSpinner);
-    }
 
-    private void initMediaPlayer(final Video video) {
-//        try {
-//            stopVideo();
-//            mediaPlayer = new MediaPlayer();
-////          mp.setDisplay(((SurfaceView) findViewById(R.id.surfaceView)).getHolder());
-////          mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
-//
-//            mediaPlayer.setDataSource(video.getPath());
-//            mediaPlayer.prepareAsync();
-//            mediaPlayer.setLooping(false);
-//            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                @Override
-//                public void onPrepared(MediaPlayer mp) {
-//                    videoDuration = mp.getDuration();
-//                    mp.start();
-//                }
-//            });
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        videoPlayer.playMedia(video);
-       // videoDuration = videoPlayer.getVideoDuration();
+        if (selectedSpinner == 1 && video.getDuration() > 10 * 1000) {
+            view.showError("This video is longer than 10s");
+        } else {
+            videoPlayer.playMedia(video);
+            view.showInfo(video.getTitle() + " is playing");
+        }
+
     }
 
     @Override
     public void stopVideo() {
-//        if (mediaPlayer != null) {
-//            mediaPlayer.stop();
-//            mediaPlayer = null;
-//        }
         videoPlayer.stopMedia();
+    }
+
+    @Override
+    public void add(Video video) {
+        modelodel.addVideo(video);
+    }
+
+    @Override
+    public List<Video> getVideos() {
+        return modelodel.getVideoList();
     }
 
     private void setMediaPlayerCountDown(int timeInMs) {
