@@ -10,5 +10,7 @@ public interface MainPresenter extends  BasePresenter {
     void onSpinnerSelected(int item);
     void onRangeSelected(int start,int end);
     void onVideoViewClicked();
+    void addVideos(List<Video> videos);
     List<Video> getVideos();
+    void clearVideos();
 }

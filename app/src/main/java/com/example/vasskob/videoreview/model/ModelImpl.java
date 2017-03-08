@@ -19,4 +19,9 @@ public class ModelImpl implements Model {
     public void addAll(List<Video> videos) {
         mVideos = videos;
     }
+
+    @Override
+    public void clearAll() {
+        mVideos.clear();
+    }
 }

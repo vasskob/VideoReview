@@ -37,13 +37,19 @@ public class VideoPresenter implements MainPresenter {
         }
     }
 
-    public void addAll(List<Video> videos) {
+    @Override
+    public void addVideos(List<Video> videos) {
         mModel.addAll(videos);
     }
 
     @Override
     public List<Video> getVideos() {
         return mModel.getVideos();
+    }
+
+    @Override
+    public void clearVideos() {
+        mModel.clearAll();
     }
 
     private void setMediaPlayerCountDown(int timeInMs) {

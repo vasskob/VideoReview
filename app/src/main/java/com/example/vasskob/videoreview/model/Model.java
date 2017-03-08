@@ -7,4 +7,5 @@ import java.util.List;
 public interface Model {
     List<Video> getVideos();
     void addAll(List<Video> videos);
+    void clearAll();
 }

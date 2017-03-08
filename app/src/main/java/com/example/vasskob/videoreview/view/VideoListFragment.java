@@ -21,7 +21,6 @@ import android.widget.Spinner;
 
 import com.example.vasskob.videoreview.R;
 import com.example.vasskob.videoreview.model.data.Video;
-import com.example.vasskob.videoreview.presenter.MainPresenter;
 import com.example.vasskob.videoreview.presenter.VideoPresenter;
 import com.example.vasskob.videoreview.utils.MarginDecoration;
 import com.example.vasskob.videoreview.view.adapters.VideoListAdapter;
@@ -30,7 +29,6 @@ import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -187,14 +185,15 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
                     videos.add(video);
                 }
             }
-            videoPresenter.addAll(videos);
-            showData(videoPresenter.getVideos());
+            videoPresenter.addVideos(videos);
+            showData(videos);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         if (loader.getId() == VIDEO_LOADER_ID) {
+            videoPresenter.clearVideos();
             showData(Collections.<Video>emptyList());
         }
     }
