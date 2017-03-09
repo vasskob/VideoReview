@@ -135,7 +135,7 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
 
     @Override
     public void showEmptyList() {
-        makeToast(getResources().getString(R.string.list_is_empty));
+        makeToast(getResources().getString(R.string.list_is_empty), Snackbar.LENGTH_INDEFINITE);
     }
 
     @Override
@@ -149,8 +149,13 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
     }
 
     private void makeToast(String text) {
-        Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_SHORT).show();
+        makeToast(text, Snackbar.LENGTH_SHORT);
     }
+
+    private void makeToast(String text, int length) {
+        Snackbar.make(mRecyclerView, text, length).show();
+    }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
