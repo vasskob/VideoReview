@@ -25,21 +25,25 @@ public class VideoPresenter implements MainPresenter {
 
     @Override
     public void onVideoItemClicked(Video video) {
-        if (selectedSpinner != 1 || video.getDuration() <= 10 * 1000) {
+        if (selectedSpinner == 1 && video.getDuration() > 10 * 1000) {
+            mVideoview.showError("This video is longer than 10s");
+        } else {
             try {
                 videoPlayer.playMedia(video);
                 mVideoview.showInfo(video.getTitle() + " is playing");
             } catch (IOException e) {
                 mVideoview.showError("IOException there is no file to play");
             }
-        } else {
-            mVideoview.showError("This video is longer than 10s");
         }
     }
 
     @Override
     public void addVideos(List<Video> videos) {
-        mModel.addAll(videos);
+        if (videos.isEmpty())
+            mVideoview.showEmptyList();
+        else {
+            mModel.addAll(videos);
+        }
     }
 
     @Override
