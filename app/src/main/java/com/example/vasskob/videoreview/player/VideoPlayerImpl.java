@@ -1,6 +1,7 @@
 package com.example.vasskob.videoreview.player;
 
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -25,12 +26,18 @@ public class VideoPlayerImpl implements VideoPlayer {
 
             @Override
             public void onClick(View v) {
-                click = !click;
-                if (click) {
-                    mMediaPlayer.pause();
-                } else {
-                    mMediaPlayer.start();
-                }
+               try {
+                   click = !click;
+                   if (click) {
+                       mMediaPlayer.pause();
+                   } else {
+                       mMediaPlayer.start();
+                   }
+
+               }catch (Exception e){
+                   Log.d("Exception", "mTextureView.setOnClickListener exception");
+               }
+
             }
         });
     }

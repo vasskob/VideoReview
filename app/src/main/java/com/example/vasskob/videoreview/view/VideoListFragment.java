@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.vasskob.videoreview.R;
 import com.example.vasskob.videoreview.model.data.Video;
@@ -135,7 +136,7 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
 
     @Override
     public void showEmptyList() {
-        makeToast(getResources().getString(R.string.list_is_empty), Snackbar.LENGTH_INDEFINITE);
+        makeToast(getResources().getString(R.string.list_is_empty));
     }
 
     @Override
@@ -148,12 +149,13 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
         return mTextureView;
     }
 
-    private void makeToast(String text) {
-        makeToast(text, Snackbar.LENGTH_SHORT);
-    }
 
-    private void makeToast(String text, int length) {
-        Snackbar.make(mRecyclerView, text, length).show();
+    private void makeToast(String text) {
+        Snackbar snack = Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_LONG);
+        View view = snack.getView();
+        TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snack.show();
     }
 
 
@@ -186,7 +188,7 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
                     String title = data.getString(titleIndex);
                     String path = data.getString(pathIndex);
                     int duration = data.getInt(durationIndex);
-                    Video video = new Video(id, title, path,duration);
+                    Video video = new Video(id, title, path, duration);
                     videos.add(video);
                 }
             }

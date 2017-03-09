@@ -29,7 +29,12 @@ public class VideoPresenter implements MainPresenter {
             mVideoview.showError("This video is longer than 10s");
         } else {
             try {
-                videoPlayer.playMedia(video);
+                if (videoPlayer != null) {
+                    videoPlayer.playMedia(video);
+                } else {
+                    videoPlayer = new VideoPlayerImpl(mVideoview.getTextureView());
+                    videoPlayer.playMedia(video);
+                }
                 mVideoview.showInfo(video.getTitle() + " is playing");
             } catch (IOException e) {
                 mVideoview.showError("IOException there is no file to play");
@@ -53,7 +58,9 @@ public class VideoPresenter implements MainPresenter {
 
     @Override
     public void clearVideos() {
-        mModel.clearAll();
+        if (mModel != null) {
+            mModel.clearAll();
+        }
     }
 
     private void setMediaPlayerCountDown(int timeInMs) {
@@ -80,23 +87,23 @@ public class VideoPresenter implements MainPresenter {
 
     @Override
     public void onRangeSelected(int start, int end) {
-        if (mediaPlayer != null) {
-            mediaPlayer.seekTo(start);
-            mediaPlayer.start();
-            setMediaPlayerCountDown((end - start) * mediaPlayer.getDuration() / 100);
-        }
+//        if (mediaPlayer != null) {
+//            mediaPlayer.seekTo(start);
+//            mediaPlayer.start();
+//            setMediaPlayerCountDown((end - start) * mediaPlayer.getDuration() / 100);
+//        }
     }
 
     @Override
     public void onVideoViewClicked() {
-        if (mediaPlayer != null) {
-            if (!paused) {
-                mediaPlayer.pause();
-                paused = !paused;
-            } else {
-                mediaPlayer.release();
-            }
-        }
+//        if (mediaPlayer != null) {
+//            if (!paused) {
+//                mediaPlayer.pause();
+//                paused = !paused;
+//            } else {
+//                mediaPlayer.release();
+//            }
+//        }
     }
 
     @Override
