@@ -5,6 +5,8 @@ import android.view.TextureView;
 
 import com.example.vasskob.videoreview.model.data.Video;
 
+import org.florescu.android.rangeseekbar.RangeSeekBar;
+
 import java.util.List;
 
 public interface VideoView {
@@ -18,4 +20,5 @@ public interface VideoView {
     void showInfo(String s);
 
     TextureView getTextureView();
+    RangeSeekBar getRangeSeekBar();
 }

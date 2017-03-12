@@ -1,7 +1,5 @@
 package com.example.vasskob.videoreview.presenter;
 
-import android.media.MediaPlayer;
-import android.os.CountDownTimer;
 import android.util.Log;
 
 import com.example.vasskob.videoreview.model.Model;
@@ -16,28 +14,28 @@ import java.util.List;
 
 public class VideoPresenter implements MainPresenter {
 
-    private MediaPlayer mediaPlayer;
-    private boolean paused = false;
     private int selectedSpinner = 100;
-    private VideoView mVideoview;
+    private VideoView mVideoView;
     private VideoPlayer videoPlayer;
     private Model mModel;
 
     @Override
     public void onVideoItemClicked(Video video) {
         if (selectedSpinner == 1 && video.getDuration() > 10 * 1000) {
-            mVideoview.showError("This video is longer than 10s");
+            mVideoView.showError("This video is longer than 10s");
         } else {
             try {
+                mVideoView.getRangeSeekBar().resetSelectedValues();
+
                 if (videoPlayer != null) {
                     videoPlayer.playMedia(video);
                 } else {
-                    videoPlayer = new VideoPlayerImpl(mVideoview.getTextureView());
+                    videoPlayer = new VideoPlayerImpl(mVideoView.getTextureView(), mVideoView.getRangeSeekBar());
                     videoPlayer.playMedia(video);
                 }
-                mVideoview.showInfo(video.getTitle() + " is playing");
+                mVideoView.showInfo(video.getTitle() + " is playing");
             } catch (IOException e) {
-                mVideoview.showError("IOException there is no file to play");
+                mVideoView.showError("IOException there is no file to play");
             }
         }
     }
@@ -45,7 +43,7 @@ public class VideoPresenter implements MainPresenter {
     @Override
     public void addVideos(List<Video> videos) {
         if (videos.isEmpty())
-            mVideoview.showEmptyList();
+            mVideoView.showEmptyList();
         else {
             mModel.addAll(videos);
         }
@@ -63,22 +61,6 @@ public class VideoPresenter implements MainPresenter {
         }
     }
 
-    private void setMediaPlayerCountDown(int timeInMs) {
-        CountDownTimer mMediaPlayerCountDown = new CountDownTimer(timeInMs, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-            }
-
-            @Override
-            public void onFinish() {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    mediaPlayer.stop();
-                }
-            }
-        };
-        mMediaPlayerCountDown.start();
-    }
-
     @Override
     public void onSpinnerSelected(int selectedSpinner) {
         this.selectedSpinner = selectedSpinner;
@@ -87,11 +69,9 @@ public class VideoPresenter implements MainPresenter {
 
     @Override
     public void onRangeSelected(int start, int end) {
-//        if (mediaPlayer != null) {
-//            mediaPlayer.seekTo(start);
-//            mediaPlayer.start();
-//            setMediaPlayerCountDown((end - start) * mediaPlayer.getDuration() / 100);
-//        }
+        if (videoPlayer != null) {
+            videoPlayer.playMediaInRange(start, end);
+        }
     }
 
     @Override
@@ -108,9 +88,9 @@ public class VideoPresenter implements MainPresenter {
 
     @Override
     public void onAttachView(VideoView videoView) {
-        mVideoview = videoView;
-        videoPlayer = new VideoPlayerImpl(mVideoview.getTextureView()); // view
-        mModel = new ModelImpl(); // model
+        mVideoView = videoView;
+        videoPlayer = new VideoPlayerImpl(mVideoView.getTextureView(), mVideoView.getRangeSeekBar()); // view
+        mModel = new ModelImpl();
     }
 
     @Override

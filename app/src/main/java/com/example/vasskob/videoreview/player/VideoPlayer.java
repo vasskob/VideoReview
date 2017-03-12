@@ -9,4 +9,6 @@ public interface VideoPlayer {
     void playMedia(Video video) throws IOException;
     void stopMedia();
     void release();
+
+    void playMediaInRange(int start, int end);
 }

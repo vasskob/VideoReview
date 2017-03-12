@@ -149,6 +149,11 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
         return mTextureView;
     }
 
+    @Override
+    public RangeSeekBar getRangeSeekBar() {
+        return mVideoSeekBar;
+    }
+
 
     private void makeToast(String text) {
         Snackbar snack = Snackbar.make(mRecyclerView, text, Snackbar.LENGTH_LONG);
