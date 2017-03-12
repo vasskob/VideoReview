@@ -22,15 +22,16 @@ public class VideoPlayerImpl implements VideoPlayer {
     private final MediaPlayer mMediaPlayer;
     private final RangeSeekBar mRangeSeekBar;
     private final FrameLayout mFrameLayout;
-    int videoHeight;
-    int videoWidth;
+    float videoHeight;
+    float videoWidth;
+    int videoOrientation;
     private static final String TAG = VideoPlayerImpl.class.getName();
 
     public VideoPlayerImpl(TextureView textureView, RangeSeekBar rangeSeekBar, FrameLayout frameLayout) {
         mMediaPlayer = new MediaPlayer();
         mRangeSeekBar = rangeSeekBar;
         mTextureView = textureView;
-        mFrameLayout=frameLayout;
+        mFrameLayout = frameLayout;
         mTextureView.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -58,9 +59,10 @@ public class VideoPlayerImpl implements VideoPlayer {
         mRangeSeekBar.setRangeValues(0, video.getDuration() / 1000);
         mMediaPlayer.reset();
 
-        System.out.println("!!!!!!!!!! FrameLayout width = " + mFrameLayout.getWidth());
-        System.out.println("!!!!!!!!!! FrameLayout height = " + mFrameLayout.getHeight());
-        updateTextureViewSize(mFrameLayout.getWidth(),mFrameLayout.getHeight());
+        updateTextureViewSize(mFrameLayout.getWidth(), mFrameLayout.getHeight());
+        // updateTextureViewSize(1080, 608);
+        // updateTextureViewSize(1080, 1080);
+
 
         mMediaPlayer.setDataSource(video.getPath());
         Surface surface = new Surface(mTextureView.getSurfaceTexture());
@@ -112,31 +114,19 @@ public class VideoPlayerImpl implements VideoPlayer {
     private void videoSize(Video video) throws IOException {
         MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
         metaRetriever.setDataSource(video.getPath());
-        videoHeight = Integer.parseInt(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-        videoWidth = Integer.parseInt(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-
+        videoHeight = Float.parseFloat(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+        videoWidth = Float.parseFloat(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+        videoOrientation = Integer.parseInt(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION));
     }
 
     private void updateTextureViewSize(int viewWidth, int viewHeight) {
         float scaleX = 1.0f;
         float scaleY = 1.0f;
 
-        if (videoWidth > viewWidth && videoHeight > viewHeight) {
-            scaleX = videoWidth / viewWidth;
-            scaleY = videoHeight / viewHeight;
-        } else if (videoWidth < viewWidth && videoHeight < viewHeight) {
-            scaleY = viewWidth / videoWidth;
-            scaleX = viewHeight / videoHeight;
-        } else if (viewWidth > videoWidth) {
-            scaleY = (viewWidth / videoWidth) / (viewHeight / videoHeight);
-        } else if (viewHeight > videoHeight) {
-            System.out.println(" videoHeight = " + videoHeight + " videoWidth = " + videoWidth);
-            System.out.println(" viewHeight = " + viewHeight + " viewWidth = " + viewWidth);
-
-            scaleX = (viewHeight / videoHeight) / (viewWidth / videoWidth);
-
-            //1080/720 / 1080/1280
-
+        if (videoOrientation == 0) {
+            scaleY = videoHeight / videoWidth;
+        } else {
+            scaleX = videoHeight / videoWidth;
         }
 
         // Calculate pivot points, in our case crop from center
