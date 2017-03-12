@@ -30,7 +30,7 @@ public class VideoPresenter implements MainPresenter {
                 if (videoPlayer != null) {
                     videoPlayer.playMedia(video);
                 } else {
-                    videoPlayer = new VideoPlayerImpl(mVideoView.getTextureView(), mVideoView.getRangeSeekBar());
+                    videoPlayer = new VideoPlayerImpl(mVideoView.getTextureView(), mVideoView.getRangeSeekBar(), mVideoView.getFrameLayout());
                     videoPlayer.playMedia(video);
                 }
                 mVideoView.showInfo(video.getTitle() + " is playing");
@@ -89,7 +89,7 @@ public class VideoPresenter implements MainPresenter {
     @Override
     public void onAttachView(VideoView videoView) {
         mVideoView = videoView;
-        videoPlayer = new VideoPlayerImpl(mVideoView.getTextureView(), mVideoView.getRangeSeekBar()); // view
+        videoPlayer = new VideoPlayerImpl(mVideoView.getTextureView(), mVideoView.getRangeSeekBar(), mVideoView.getFrameLayout()); // view
         mModel = new ModelImpl();
     }
 

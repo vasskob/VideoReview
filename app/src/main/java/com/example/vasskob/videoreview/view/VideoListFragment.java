@@ -16,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -53,6 +55,9 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
     @Bind(R.id.video_duration_spinner)
     Spinner spinner;
 
+    @Bind(R.id.video_container)
+    FrameLayout frameLayout;
+
     private VideoPresenter videoPresenter;
     private VideoListAdapter mAdapter;
 
@@ -72,14 +77,21 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), COUNT_OF_COLUMN));
 
-        mTextureView.setOpaque(false);
-        mTextureView.getLayoutParams().height = mTextureView.getWidth();
-        mTextureView.setOnClickListener(new View.OnClickListener() {
+
+        ViewTreeObserver vto = frameLayout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void onClick(View v) {
-                videoPresenter.onVideoViewClicked();
+            public void onGlobalLayout() {
+
+                frameLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                frameLayout.getLayoutParams().height = frameLayout.getMeasuredWidth();
+              System.out.println(" frameLayout width = " + frameLayout.getMeasuredWidth());
             }
         });
+
+
+        mTextureView.setOpaque(false);
+
         videoPresenter = new VideoPresenter();
         videoPresenter.onAttachView(this);
 
@@ -152,6 +164,11 @@ public class VideoListFragment extends Fragment implements VideoView, LoaderMana
     @Override
     public RangeSeekBar getRangeSeekBar() {
         return mVideoSeekBar;
+    }
+
+    @Override
+    public FrameLayout getFrameLayout() {
+        return frameLayout;
     }
 
 

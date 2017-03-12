@@ -2,6 +2,7 @@ package com.example.vasskob.videoreview.view;
 
 
 import android.view.TextureView;
+import android.widget.FrameLayout;
 
 import com.example.vasskob.videoreview.model.data.Video;
 
@@ -21,4 +22,6 @@ public interface VideoView {
 
     TextureView getTextureView();
     RangeSeekBar getRangeSeekBar();
+
+    FrameLayout getFrameLayout();
 }
