@@ -14,6 +14,10 @@ import java.util.List;
 
 public class VideoPresenter implements MainPresenter {
 
+    private static final int SEC_TO_MILLISECOND = 1000;
+    private static final String VIDEO_LENGTH_WARN = "This video is longer than 10s";
+    private static final String IS_PLAYING = " is playing";
+    private static final String IO_EXCEPTION = "IOException there is no file to play";
     private int selectedSpinner = 100;
     private VideoView mVideoView;
     private VideoPlayer videoPlayer;
@@ -21,8 +25,8 @@ public class VideoPresenter implements MainPresenter {
 
     @Override
     public void onVideoItemClicked(Video video) {
-        if (selectedSpinner == 1 && video.getDuration() > 10 * 1000) {
-            mVideoView.showError("This video is longer than 10s");
+        if (selectedSpinner == 1 && video.getDuration() > 10 * SEC_TO_MILLISECOND) {
+            mVideoView.showError(VIDEO_LENGTH_WARN);
         } else {
             try {
                 mVideoView.getRangeSeekBar().resetSelectedValues();
@@ -33,9 +37,9 @@ public class VideoPresenter implements MainPresenter {
                     videoPlayer = new VideoPlayerImpl(mVideoView.getTextureView(), mVideoView.getRangeSeekBar(), mVideoView.getFrameLayout());
                     videoPlayer.playMedia(video);
                 }
-                mVideoView.showInfo(video.getTitle() + " is playing");
+                mVideoView.showInfo(video.getTitle() + IS_PLAYING);
             } catch (IOException e) {
-                mVideoView.showError("IOException there is no file to play");
+                mVideoView.showError(IO_EXCEPTION);
             }
         }
     }
@@ -72,18 +76,6 @@ public class VideoPresenter implements MainPresenter {
         if (videoPlayer != null) {
             videoPlayer.playMediaInRange(start, end);
         }
-    }
-
-    @Override
-    public void onVideoViewClicked() {
-//        if (mediaPlayer != null) {
-//            if (!paused) {
-//                mediaPlayer.pause();
-//                paused = !paused;
-//            } else {
-//                mediaPlayer.release();
-//            }
-//        }
     }
 
     @Override

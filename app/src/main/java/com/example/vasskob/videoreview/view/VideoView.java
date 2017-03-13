@@ -22,6 +22,5 @@ public interface VideoView {
 
     TextureView getTextureView();
     RangeSeekBar getRangeSeekBar();
-
     FrameLayout getFrameLayout();
 }

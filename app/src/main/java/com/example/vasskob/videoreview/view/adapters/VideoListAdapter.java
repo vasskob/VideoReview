@@ -21,6 +21,8 @@ import butterknife.ButterKnife;
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoListViewHolder> {
 
+    private static final int THUMBNAIL_WIDTH = 200;
+    private static final int THUMBNAIL_HEIGHT = 200;
     private final VideoPresenter mPresenter;
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
@@ -47,7 +49,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 .asBitmap()
                 .placeholder(R.drawable.video_pic_small)
                 .centerCrop()
-                .override(200, 200)
+                .override(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
                 .into(holder.mThumbnail);
 
         holder.mThumbnail.setSelected(position == mCurrentPosition);
